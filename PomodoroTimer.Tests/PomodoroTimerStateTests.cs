@@ -18,7 +18,7 @@ public sealed class PomodoroTimerStateTests
         Assert.False(state.IsRunning);
         Assert.Equal(FocusDuration, state.TimeRemaining);
         Assert.Equal(0, state.CompletedFocusSessions);
-        Assert.Equal("准备开始第一轮专注。", state.StatusMessage);
+        Assert.Equal(PomodoroTimerStatus.ReadyToStart, state.Status);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public sealed class PomodoroTimerStateTests
 
         Assert.True(state.IsRunning);
         Assert.Equal(TimeSpan.FromSeconds(9), state.TimeRemaining);
-        Assert.Equal("正在专注。把注意力留给这一件事。", state.StatusMessage);
+        Assert.Equal(PomodoroTimerStatus.FocusRunning, state.Status);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public sealed class PomodoroTimerStateTests
 
         Assert.False(state.IsRunning);
         Assert.Equal(TimeSpan.FromSeconds(9), state.TimeRemaining);
-        Assert.Equal("计时已暂停，准备好时继续专注。", state.StatusMessage);
+        Assert.Equal(PomodoroTimerStatus.FocusPaused, state.Status);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class PomodoroTimerStateTests
         Assert.False(state.IsFocusSession);
         Assert.Equal(BreakDuration, state.TimeRemaining);
         Assert.Equal(1, state.CompletedFocusSessions);
-        Assert.Equal("一轮专注已完成，切换到短休息。", state.StatusMessage);
+        Assert.Equal(PomodoroTimerStatus.FocusCompleted, state.Status);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public sealed class PomodoroTimerStateTests
         Assert.False(state.IsFocusSession);
         Assert.Equal(BreakDuration, state.TimeRemaining);
         Assert.Equal(0, state.CompletedFocusSessions);
-        Assert.Equal("已切换到短休息，准备重新整理节奏。", state.StatusMessage);
+        Assert.Equal(PomodoroTimerStatus.SwitchedToBreak, state.Status);
 
         state.Reset();
 
@@ -83,7 +83,7 @@ public sealed class PomodoroTimerStateTests
         Assert.False(state.IsRunning);
         Assert.Equal(FocusDuration, state.TimeRemaining);
         Assert.Equal(0, state.CompletedFocusSessions);
-        Assert.Equal("计时器已重置，回到第一轮 25 分钟专注。", state.StatusMessage);
+        Assert.Equal(PomodoroTimerStatus.Reset, state.Status);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public sealed class PomodoroTimerStateTests
         Assert.True(state.IsFocusSession);
         Assert.Equal(FocusDuration, state.TimeRemaining);
         Assert.Equal(0, state.CompletedFocusSessions);
-        Assert.Equal("休息结束，下一轮 25 分钟专注已就绪。", state.StatusMessage);
+        Assert.Equal(PomodoroTimerStatus.BreakCompleted, state.Status);
     }
 
     private static PomodoroTimerState CreateState()
