@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
+using PomodoroTimer.Localization;
 using PomodoroTimer.Models;
 
 namespace PomodoroTimer.ViewModels;
@@ -8,16 +11,23 @@ namespace PomodoroTimer.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     private static readonly TimeSpan UiTickInterval = TimeSpan.FromSeconds(1);
+    private readonly AppLocalizer _localizer;
     private readonly DispatcherTimer _timer;
     private readonly PomodoroTimerState _timerState;
+    private LanguageOption _selectedLanguage;
 
-    public MainWindowViewModel() : this(new PomodoroTimerState())
+    public MainWindowViewModel()
+        : this(new PomodoroTimerState(), new AppLocalizer(new InMemoryLanguagePreferenceStore()))
     {
     }
 
-    internal MainWindowViewModel(PomodoroTimerState timerState)
+    public MainWindowViewModel(PomodoroTimerState timerState, AppLocalizer localizer)
     {
         _timerState = timerState;
+        _localizer = localizer;
+        _localizer.LanguageChanged += OnLanguageChanged;
+        LanguageOptions = _localizer.LanguageOptions;
+        _selectedLanguage = GetLanguageOption(_localizer.CurrentLanguage);
         _timer = new DispatcherTimer { Interval = UiTickInterval };
         _timer.Tick += OnTimerTick;
 
@@ -32,21 +42,50 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public IRelayCommand SkipPhaseCommand { get; }
 
-    public string PhaseLabel => _timerState.IsFocusSession ? "专注阶段" : "短休息";
+    public IReadOnlyList<LanguageOption> LanguageOptions { get; }
+
+    public LanguageOption SelectedLanguage
+    {
+        get => _selectedLanguage;
+        set
+        {
+            if (value is null || value == _selectedLanguage)
+            {
+                return;
+            }
+
+            if (SetProperty(ref _selectedLanguage, value))
+            {
+                _localizer.SetLanguage(value.Language);
+            }
+        }
+    }
+
+    public string WindowTitle => _localizer.GetText(LocalizedText.AppTitle);
+
+    public string HeroTitle => _localizer.GetText(LocalizedText.HeroTitle);
+
+    public string LanguageSelectionLabel => _localizer.GetText(LocalizedText.LanguageSelectionLabel);
+
+    public string PhaseLabel => _timerState.IsFocusSession
+        ? _localizer.GetText(LocalizedText.PhaseFocusLabel)
+        : _localizer.GetText(LocalizedText.PhaseBreakLabel);
 
     public string PhaseDescription => _timerState.IsFocusSession
-        ? "锁定一个任务，给它一整块不被打断的时间。"
-        : "离开屏幕几分钟，让下一轮专注重新变得清晰。";
+        ? _localizer.GetText(LocalizedText.PhaseFocusDescription)
+        : _localizer.GetText(LocalizedText.PhaseBreakDescription);
 
     public string TimerDisplay => _timerState.TimeRemaining.ToString(@"mm\:ss");
 
-    public string PrimaryActionLabel => _timerState.IsRunning ? "暂停" : "开始";
+    public string PrimaryActionLabel => _timerState.IsRunning
+        ? _localizer.GetText(LocalizedText.PrimaryActionPause)
+        : _localizer.GetText(LocalizedText.PrimaryActionStart);
 
     public string NextPhaseLabel => _timerState.IsFocusSession
-        ? "完成后进入 5 分钟短休息"
-        : "完成后回到 25 分钟专注";
+        ? _localizer.GetText(LocalizedText.NextPhaseToBreak)
+        : _localizer.GetText(LocalizedText.NextPhaseToFocus);
 
-    public string ProgressLabel => $"{ProgressPercent:0}% 已完成";
+    public string ProgressLabel => _localizer.Format(LocalizedText.ProgressLabelFormat, ProgressPercent);
 
     public double ProgressPercent
     {
@@ -65,15 +104,43 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public string CompletedFocusSessions => _timerState.CompletedFocusSessions.ToString("D2");
 
-    public string SessionLengthLabel => _timerState.IsFocusSession ? "25 分钟专注块" : "5 分钟恢复块";
+    public string SessionLengthLabel => _timerState.IsFocusSession
+        ? _localizer.GetText(LocalizedText.SessionLengthFocus)
+        : _localizer.GetText(LocalizedText.SessionLengthBreak);
 
-    public string CycleOutline => "专注 25:00 → 休息 05:00 → 再次专注";
+    public string CycleOutline => _localizer.GetText(LocalizedText.CycleOutline);
 
     public string FocusHint => _timerState.IsFocusSession
-        ? "开始后每秒递减，结束时会自动切到休息阶段。"
-        : "这段时间用来站起来、补水，或者完全离开当前任务。";
+        ? _localizer.GetText(LocalizedText.FocusHintFocus)
+        : _localizer.GetText(LocalizedText.FocusHintBreak);
 
-    public string StatusMessage => _timerState.StatusMessage;
+    public string ResetActionLabel => _localizer.GetText(LocalizedText.ResetActionLabel);
+
+    public string SkipPhaseActionLabel => _localizer.GetText(LocalizedText.SkipPhaseActionLabel);
+
+    public string CompletedRoundsLabel => _localizer.GetText(LocalizedText.CompletedRoundsLabel);
+
+    public string CurrentPaceLabel => _localizer.GetText(LocalizedText.CurrentPaceLabel);
+
+    public string CycleStructureLabel => _localizer.GetText(LocalizedText.CycleStructureLabel);
+
+    public string HowToUseLabel => _localizer.GetText(LocalizedText.HowToUseLabel);
+
+    public string HowToUseSteps => _localizer.GetText(LocalizedText.HowToUseSteps);
+
+    public string StatusMessage => _timerState.Status switch
+    {
+        PomodoroTimerStatus.ReadyToStart => _localizer.GetText(LocalizedText.StatusReadyToStart),
+        PomodoroTimerStatus.FocusRunning => _localizer.GetText(LocalizedText.StatusFocusRunning),
+        PomodoroTimerStatus.BreakRunning => _localizer.GetText(LocalizedText.StatusBreakRunning),
+        PomodoroTimerStatus.FocusPaused => _localizer.GetText(LocalizedText.StatusFocusPaused),
+        PomodoroTimerStatus.BreakPaused => _localizer.GetText(LocalizedText.StatusBreakPaused),
+        PomodoroTimerStatus.Reset => _localizer.GetText(LocalizedText.StatusReset),
+        PomodoroTimerStatus.SwitchedToBreak => _localizer.GetText(LocalizedText.StatusSwitchedToBreak),
+        PomodoroTimerStatus.FocusCompleted => _localizer.GetText(LocalizedText.StatusFocusCompleted),
+        PomodoroTimerStatus.SwitchedToFocus => _localizer.GetText(LocalizedText.StatusSwitchedToFocus),
+        _ => _localizer.GetText(LocalizedText.StatusBreakCompleted),
+    };
 
     private void ToggleTimer()
     {
@@ -116,8 +183,28 @@ public partial class MainWindowViewModel : ViewModelBase
         RaiseUiStateChanged();
     }
 
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        var nextLanguage = GetLanguageOption(_localizer.CurrentLanguage);
+        if (_selectedLanguage != nextLanguage)
+        {
+            _selectedLanguage = nextLanguage;
+            OnPropertyChanged(nameof(SelectedLanguage));
+        }
+
+        RaiseUiStateChanged();
+    }
+
+    private LanguageOption GetLanguageOption(AppLanguage language)
+    {
+        return LanguageOptions.First(option => option.Language == language);
+    }
+
     private void RaiseUiStateChanged()
     {
+        OnPropertyChanged(nameof(WindowTitle));
+        OnPropertyChanged(nameof(HeroTitle));
+        OnPropertyChanged(nameof(LanguageSelectionLabel));
         OnPropertyChanged(nameof(PhaseLabel));
         OnPropertyChanged(nameof(PhaseDescription));
         OnPropertyChanged(nameof(TimerDisplay));
@@ -130,5 +217,12 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(CycleOutline));
         OnPropertyChanged(nameof(FocusHint));
         OnPropertyChanged(nameof(StatusMessage));
+        OnPropertyChanged(nameof(ResetActionLabel));
+        OnPropertyChanged(nameof(SkipPhaseActionLabel));
+        OnPropertyChanged(nameof(CompletedRoundsLabel));
+        OnPropertyChanged(nameof(CurrentPaceLabel));
+        OnPropertyChanged(nameof(CycleStructureLabel));
+        OnPropertyChanged(nameof(HowToUseLabel));
+        OnPropertyChanged(nameof(HowToUseSteps));
     }
 }

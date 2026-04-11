@@ -1,9 +1,11 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using PomodoroTimer.Localization;
+using PomodoroTimer.Models;
 using PomodoroTimer.ViewModels;
 using PomodoroTimer.Views;
 
@@ -20,9 +22,11 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            var localizer = new AppLocalizer(new FileLanguagePreferenceStore());
+
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = new MainWindowViewModel(new PomodoroTimerState(), localizer),
             };
         }
 
