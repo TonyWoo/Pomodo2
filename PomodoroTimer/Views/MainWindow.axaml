@@ -1,19 +1,19 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PomodoroTimer.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DesignWidth="1120"
-        d:DesignHeight="740"
+        d:DesignHeight="820"
         x:Class="PomodoroTimer.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Pomodoro Timer"
+        Title="{Binding WindowTitle}"
         Width="1120"
-        Height="740"
+        Height="820"
         MinWidth="920"
-        MinHeight="620"
+        MinHeight="760"
         Background="#F4EEE4">
 
     <Design.DataContext>
@@ -61,11 +61,11 @@
                 <StackPanel Grid.ColumnSpan="2"
                             Spacing="8"
                             Margin="0,0,0,28">
-                    <TextBlock Text="Pomodoro Timer"
+                    <TextBlock Text="{Binding WindowTitle}"
                                FontSize="18"
                                FontWeight="SemiBold"
                                Foreground="#2E4B3C" />
-                    <TextBlock Text="用一段完整的时间，把今天最重要的事情往前推。"
+                    <TextBlock Text="{Binding HeroTitle}"
                                FontSize="42"
                                FontWeight="Bold"
                                FontFamily="Georgia, Cambria, Times New Roman"
@@ -142,11 +142,11 @@
                                     MinWidth="148" />
                             <Button Classes="secondary"
                                     Command="{Binding ResetCommand}"
-                                    Content="重置"
+                                    Content="{Binding ResetActionLabel}"
                                     MinWidth="116" />
                             <Button Classes="ghost"
                                     Command="{Binding SkipPhaseCommand}"
-                                    Content="切换阶段"
+                                    Content="{Binding SkipPhaseActionLabel}"
                                     MinWidth="126" />
                         </StackPanel>
                     </StackPanel>
@@ -157,21 +157,36 @@
                             Spacing="16"
                             Margin="18,0,0,0">
                     <Border Classes="metricCard">
-                        <StackPanel Spacing="10">
-                            <TextBlock Text="完成轮次"
-                                       FontSize="15"
-                                       Foreground="#7A6656" />
-                            <TextBlock Text="{Binding CompletedFocusSessions}"
-                                       FontSize="44"
-                                       FontWeight="Bold"
-                                       FontFamily="Georgia, Cambria, Times New Roman"
-                                       Foreground="#2E4B3C" />
+                        <StackPanel Spacing="16">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="16">
+                                <TextBlock Text="{Binding LanguageSelectionLabel}"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="#7A6656"
+                                           VerticalAlignment="Center" />
+                                <ComboBox Grid.Column="1"
+                                          ItemsSource="{Binding LanguageOptions}"
+                                          SelectedItem="{Binding SelectedLanguage}"
+                                          MinWidth="156"
+                                          HorizontalAlignment="Right" />
+                            </Grid>
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="{Binding CompletedRoundsLabel}"
+                                           FontSize="15"
+                                           Foreground="#7A6656" />
+                                <TextBlock Text="{Binding CompletedFocusSessions}"
+                                           FontSize="44"
+                                           FontWeight="Bold"
+                                           FontFamily="Georgia, Cambria, Times New Roman"
+                                           Foreground="#2E4B3C" />
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 
                     <Border Classes="metricCard">
                         <StackPanel Spacing="10">
-                            <TextBlock Text="当前节奏"
+                            <TextBlock Text="{Binding CurrentPaceLabel}"
                                        FontSize="15"
                                        Foreground="#7A6656" />
                             <TextBlock Text="{Binding SessionLengthLabel}"
@@ -184,7 +199,7 @@
 
                     <Border Classes="metricCard">
                         <StackPanel Spacing="10">
-                            <TextBlock Text="循环结构"
+                            <TextBlock Text="{Binding CycleStructureLabel}"
                                        FontSize="15"
                                        Foreground="#7A6656" />
                             <TextBlock Text="{Binding CycleOutline}"
@@ -199,11 +214,11 @@
                             CornerRadius="24"
                             Padding="22">
                         <StackPanel Spacing="10">
-                            <TextBlock Text="使用方式"
+                            <TextBlock Text="{Binding HowToUseLabel}"
                                        FontSize="18"
                                        FontWeight="SemiBold"
                                        Foreground="#FFF7EE" />
-                            <TextBlock Text="1. 点击开始进入当前阶段。&#10;2. 暂停会冻结倒计时。&#10;3. 重置会回到第一轮 25:00。"
+                            <TextBlock Text="{Binding HowToUseSteps}"
                                        FontSize="15"
                                        Foreground="#F5E8D7"
                                        TextWrapping="Wrap" />
