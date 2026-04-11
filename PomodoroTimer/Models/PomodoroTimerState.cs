@@ -24,7 +24,7 @@ public sealed class PomodoroTimerState
 
         IsFocusSession = true;
         TimeRemaining = _focusDuration;
-        StatusMessage = "准备开始第一轮专注。";
+        Status = PomodoroTimerStatus.ReadyToStart;
     }
 
     public bool IsFocusSession { get; private set; }
@@ -35,20 +35,20 @@ public sealed class PomodoroTimerState
 
     public TimeSpan TimeRemaining { get; private set; }
 
-    public string StatusMessage { get; private set; }
+    public PomodoroTimerStatus Status { get; private set; }
 
     public TimeSpan CurrentDuration => IsFocusSession ? _focusDuration : _breakDuration;
 
     public void ToggleRunning()
     {
         IsRunning = !IsRunning;
-        StatusMessage = IsRunning
+        Status = IsRunning
             ? IsFocusSession
-                ? "正在专注。把注意力留给这一件事。"
-                : "正在休息。给自己一个真正的间隔。"
+                ? PomodoroTimerStatus.FocusRunning
+                : PomodoroTimerStatus.BreakRunning
             : IsFocusSession
-                ? "计时已暂停，准备好时继续专注。"
-                : "休息已暂停，准备好时继续。";
+                ? PomodoroTimerStatus.FocusPaused
+                : PomodoroTimerStatus.BreakPaused;
     }
 
     public void Reset()
@@ -57,7 +57,7 @@ public sealed class PomodoroTimerState
         IsFocusSession = true;
         CompletedFocusSessions = 0;
         TimeRemaining = _focusDuration;
-        StatusMessage = "计时器已重置，回到第一轮 25 分钟专注。";
+        Status = PomodoroTimerStatus.Reset;
     }
 
     public void SkipPhase()
@@ -94,16 +94,16 @@ public sealed class PomodoroTimerState
 
             IsFocusSession = false;
             TimeRemaining = _breakDuration;
-            StatusMessage = manualAdvance
-                ? "已切换到短休息，准备重新整理节奏。"
-                : "一轮专注已完成，切换到短休息。";
+            Status = manualAdvance
+                ? PomodoroTimerStatus.SwitchedToBreak
+                : PomodoroTimerStatus.FocusCompleted;
             return;
         }
 
         IsFocusSession = true;
         TimeRemaining = _focusDuration;
-        StatusMessage = manualAdvance
-            ? "已切回专注模式，下一轮可以直接开始。"
-            : "休息结束，下一轮 25 分钟专注已就绪。";
+        Status = manualAdvance
+            ? PomodoroTimerStatus.SwitchedToFocus
+            : PomodoroTimerStatus.BreakCompleted;
     }
 }
