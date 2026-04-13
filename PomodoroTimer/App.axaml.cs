@@ -1,8 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
-using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Markup.Xaml;
 using PomodoroTimer.Localization;
 using PomodoroTimer.Models;
@@ -22,14 +19,34 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var localizer = new AppLocalizer(new FileLanguagePreferenceStore());
-
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(new PomodoroTimerState(), localizer),
+                DataContext = CreateMainWindowViewModel(),
             };
+        }
+        else if (ApplicationLifetime is IActivityApplicationLifetime activityLifetime)
+        {
+            activityLifetime.MainViewFactory = CreateMainView;
+        }
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewLifetime)
+        {
+            singleViewLifetime.MainView = CreateMainView();
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private static MainWindowViewModel CreateMainWindowViewModel()
+    {
+        var localizer = new AppLocalizer(new FileLanguagePreferenceStore());
+        return new MainWindowViewModel(new PomodoroTimerState(), localizer);
+    }
+
+    private static MainView CreateMainView()
+    {
+        return new MainView
+        {
+            DataContext = CreateMainWindowViewModel(),
+        };
     }
 }

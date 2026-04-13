@@ -1,0 +1,11 @@
+﻿<Solution>
+  <Project Path="PomodoroTimer.Android/PomodoroTimer.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="PomodoroTimer.Desktop/PomodoroTimer.Desktop.csproj" />
+  <Project Path="PomodoroTimer.iOS/PomodoroTimer.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="PomodoroTimer.Tests/PomodoroTimer.Tests.csproj" />
+  <Project Path="PomodoroTimer/PomodoroTimer.csproj" />
+</Solution>

@@ -2,7 +2,7 @@
 
 [中文说明 / Chinese documentation](README.zh-CN.md)
 
-PomodoroTimer is a .NET 8 desktop Pomodoro timer built with Avalonia. The current app presents a Chinese-language interface for running a simple focus/break loop with start, pause, reset, and phase-skip controls.
+PomodoroTimer is a Pomodoro timer built with Avalonia. The repository now shares one app layer across Windows and macOS desktop, plus dedicated iOS and Android heads that host the same timer UI, localization, and state logic.
 
 ## Overview
 
@@ -10,11 +10,12 @@ PomodoroTimer is a .NET 8 desktop Pomodoro timer built with Avalonia. The curren
 - Short break: 5 minutes
 - Controls for start/pause, reset, and skipping to the next phase
 - Progress tracking for the active phase and completed focus sessions
-- MVVM-based Avalonia UI backed by unit-tested timer state logic
+- One shared Avalonia view-model/model/localization stack across desktop and mobile heads
 
 ## Tech Stack
 
-- .NET 8
+- .NET 8 for the shared app, desktop head, and tests
+- .NET 10 mobile heads required by current Avalonia Android/iOS packages
 - Avalonia 12
 - CommunityToolkit.Mvvm
 - xUnit
@@ -24,40 +25,59 @@ PomodoroTimer is a .NET 8 desktop Pomodoro timer built with Avalonia. The curren
 ```text
 .
 |-- PomodoroTimer.sln
+|-- PomodoroTimer.CrossPlatform.slnx
 |-- PomodoroTimer/
-|   |-- Program.cs
 |   |-- App.axaml
+|   |-- Views/MainView.axaml
 |   |-- Views/MainWindow.axaml
 |   |-- ViewModels/MainWindowViewModel.cs
 |   `-- Models/PomodoroTimerState.cs
+|-- PomodoroTimer.Desktop/
+|   `-- Program.cs
+|-- PomodoroTimer.Android/
+|   `-- MainActivity.cs
+|-- PomodoroTimer.iOS/
+|   `-- AppDelegate.cs
 `-- PomodoroTimer.Tests/
-    |-- PomodoroTimer.Tests.csproj
-    `-- PomodoroTimerStateTests.cs
+    `-- PomodoroTimer.Tests.csproj
 ```
 
 Key files:
 
-- `PomodoroTimer/Views/MainWindow.axaml`: main desktop layout, controls, and visual styling
-- `PomodoroTimer/ViewModels/MainWindowViewModel.cs`: UI-facing labels, commands, and progress calculations
-- `PomodoroTimer/Models/PomodoroTimerState.cs`: focus/break state machine and status messaging
-- `PomodoroTimer.Tests/PomodoroTimerStateTests.cs`: timer-state regression coverage
+- `PomodoroTimer/App.axaml.cs`: shared Avalonia startup that routes desktop and mobile lifetimes into the same timer experience
+- `PomodoroTimer/Views/MainView.axaml`: shared timer shell used by desktop and mobile heads
+- `PomodoroTimer.Desktop/Program.cs`: Windows/macOS desktop bootstrap
+- `PomodoroTimer.Android/MainActivity.cs`: Android entry point
+- `PomodoroTimer.iOS/AppDelegate.cs`: iOS entry point
 
 ## Getting Started
 
-### Prerequisite
+### Prerequisites
 
-- .NET 8 SDK
+- .NET 8 SDK for the shared app, desktop head, tests, and CI path
+- .NET 10 SDK plus Android/iOS workloads and native toolchains when building the mobile heads
 
-### Build
+### Build the default desktop/test workspace
 
 ```bash
 dotnet build PomodoroTimer.sln
 ```
 
-### Run
+### Run the desktop app on Windows or macOS
 
 ```bash
-dotnet run --project PomodoroTimer/PomodoroTimer.csproj
+dotnet run --project PomodoroTimer.Desktop/PomodoroTimer.Desktop.csproj
+```
+
+### Open the full cross-platform workspace
+
+Use `PomodoroTimer.CrossPlatform.slnx` in an IDE when you need the desktop, Android, and iOS heads visible together.
+
+### Build mobile heads explicitly
+
+```bash
+dotnet build PomodoroTimer.Android/PomodoroTimer.Android.csproj
+dotnet build PomodoroTimer.iOS/PomodoroTimer.iOS.csproj
 ```
 
 ### Test
@@ -72,9 +92,8 @@ dotnet test PomodoroTimer.Tests/PomodoroTimer.Tests.csproj --no-build
 - Completing a focus session switches to a 5-minute short break
 - Completing a break switches back to focus mode
 - Manually skipping a phase does not increment the completed-focus counter
-- The current UI copy is written in Chinese
+- The current UI copy is written in Chinese by default, with additional language options available in-app
 
 ## Chinese Version
 
 For a Chinese project introduction and setup guide, see [README.zh-CN.md](README.zh-CN.md).
-

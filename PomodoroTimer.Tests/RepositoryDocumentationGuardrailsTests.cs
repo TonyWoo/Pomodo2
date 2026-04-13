@@ -27,11 +27,16 @@ public sealed class RepositoryDocumentationGuardrailsTests
             "[WORKFLOW.md](WORKFLOW.md)",
             "[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)",
             "[docs/exec-plans/README.md](docs/exec-plans/README.md)",
-            "PomodoroTimer/Program.cs",
+            "PomodoroTimer/App.axaml",
+            "PomodoroTimer/Views/MainView.axaml",
             "PomodoroTimer/Views/MainWindow.axaml",
+            "PomodoroTimer.Desktop/Program.cs",
+            "PomodoroTimer.Android/MainActivity.cs",
+            "PomodoroTimer.iOS/AppDelegate.cs",
             "PomodoroTimer/ViewModels/MainWindowViewModel.cs",
             "PomodoroTimer/Models/PomodoroTimerState.cs",
             "PomodoroTimer/Localization/",
+            "PomodoroTimer.CrossPlatform.slnx",
             "PomodoroTimer.Tests/RepositoryDocumentationGuardrailsTests.cs",
             ".github/workflows/dotnet-desktop.yml",
             "dotnet build PomodoroTimer.sln",
@@ -51,6 +56,10 @@ public sealed class RepositoryDocumentationGuardrailsTests
             "README.zh-CN.md",
             "WORKFLOW.md",
             "AGENTS.md",
+            "PomodoroTimer.CrossPlatform.slnx",
+            "PomodoroTimer.Desktop/PomodoroTimer.Desktop.csproj",
+            "PomodoroTimer.Android/PomodoroTimer.Android.csproj",
+            "PomodoroTimer.iOS/PomodoroTimer.iOS.csproj",
             "docs/ARCHITECTURE.md",
             "docs/exec-plans/README.md",
             "docs/exec-plans/active/README.md",
@@ -71,7 +80,11 @@ public sealed class RepositoryDocumentationGuardrailsTests
         foreach (var requiredSnippet in new[]
         {
             "PomodoroTimer/",
+            "PomodoroTimer.Desktop/",
+            "PomodoroTimer.Android/",
+            "PomodoroTimer.iOS/",
             "PomodoroTimer.Tests/",
+            "PomodoroTimer/Views/MainView.axaml",
             "PomodoroTimer/ViewModels/MainWindowViewModel.cs",
             "PomodoroTimer/Models/PomodoroTimerState.cs",
             "dotnet build PomodoroTimer.sln",
@@ -80,6 +93,19 @@ public sealed class RepositoryDocumentationGuardrailsTests
         })
         {
             Assert.Contains(requiredSnippet, architectureText, StringComparison.Ordinal);
+        }
+
+        var readmeText = File.ReadAllText(GetRepoPath("README.md"));
+
+        foreach (var requiredSnippet in new[]
+        {
+            "PomodoroTimer.CrossPlatform.slnx",
+            "PomodoroTimer.Desktop/PomodoroTimer.Desktop.csproj",
+            "PomodoroTimer.Android/PomodoroTimer.Android.csproj",
+            "PomodoroTimer.iOS/PomodoroTimer.iOS.csproj"
+        })
+        {
+            Assert.Contains(requiredSnippet, readmeText, StringComparison.Ordinal);
         }
 
         var plansReadmeText = File.ReadAllText(GetRepoPath("docs", "exec-plans", "README.md"));
@@ -95,6 +121,14 @@ public sealed class RepositoryDocumentationGuardrailsTests
         {
             Assert.Contains(requiredSnippet, plansReadmeText, StringComparison.Ordinal);
         }
+
+        var solutionText = File.ReadAllText(GetRepoPath("PomodoroTimer.sln"));
+        Assert.Contains("PomodoroTimer.Desktop\\PomodoroTimer.Desktop.csproj", solutionText, StringComparison.Ordinal);
+
+        var crossPlatformSolutionText = File.ReadAllText(GetRepoPath("PomodoroTimer.CrossPlatform.slnx"));
+        Assert.Contains("PomodoroTimer.Android/PomodoroTimer.Android.csproj", crossPlatformSolutionText, StringComparison.Ordinal);
+        Assert.Contains("PomodoroTimer.iOS/PomodoroTimer.iOS.csproj", crossPlatformSolutionText, StringComparison.Ordinal);
+        Assert.Contains("PomodoroTimer.Desktop/PomodoroTimer.Desktop.csproj", crossPlatformSolutionText, StringComparison.Ordinal);
 
         var activePlanText = File.ReadAllText(GetRepoPath("docs", "exec-plans", "active", "AI-9-harness-engineering-agents-map.md"));
 
