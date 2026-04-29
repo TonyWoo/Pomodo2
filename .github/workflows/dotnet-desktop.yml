@@ -5,6 +5,11 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  release:
+    types: [ "published" ]
+
+permissions:
+  contents: read
 
 jobs:
   build-test:
@@ -32,3 +37,75 @@ jobs:
 
     - name: Test
       run: dotnet test PomodoroTimer.Tests/PomodoroTimer.Tests.csproj --configuration Release --no-build
+
+  release-assets:
+    if: github.event_name == 'release'
+    needs: build-test
+    permissions:
+      contents: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            runtime-id: win-x64
+            release-asset: PomodoroTimer-win-x64.zip
+          - os: macos-latest
+            runtime-id: osx-x64
+            release-asset: PomodoroTimer-macos-x64.zip
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore
+      run: dotnet restore PomodoroTimer.sln
+
+    - name: Publish desktop app
+      shell: pwsh
+      run: >
+        dotnet publish PomodoroTimer.Desktop/PomodoroTimer.Desktop.csproj
+        --configuration Release
+        --runtime ${{ matrix.runtime-id }}
+        --self-contained true
+        --output "${{ runner.temp }}/pomodoro-publish/${{ matrix.runtime-id }}"
+
+    - name: Stage release package
+      shell: pwsh
+      run: |
+        $publishDir = Join-Path $env:RUNNER_TEMP "pomodoro-publish/${{ matrix.runtime-id }}"
+        $packageRoot = Join-Path $env:RUNNER_TEMP "pomodoro-package-root"
+        $packageDir = Join-Path $packageRoot "PomodoroTimer-${{ matrix.runtime-id }}"
+        New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+        Copy-Item -Path (Join-Path $publishDir '*') -Destination $packageDir -Recurse -Force
+        "PACKAGE_DIR=$packageDir" >> $env:GITHUB_ENV
+
+    - name: Package Windows release asset
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $packagePath = Join-Path $env:RUNNER_TEMP "${{ matrix.release-asset }}"
+        Compress-Archive -Path $env:PACKAGE_DIR -DestinationPath $packagePath -Force
+        "PACKAGE_PATH=$packagePath" >> $env:GITHUB_ENV
+
+    - name: Package macOS release asset
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        package_path="${RUNNER_TEMP}/${{ matrix.release-asset }}"
+        ditto -c -k --sequesterRsrc --keepParent "${PACKAGE_DIR}" "${package_path}"
+        echo "PACKAGE_PATH=${package_path}" >> "${GITHUB_ENV}"
+
+    - name: Upload package to GitHub Release
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release upload "${{ github.event.release.tag_name }}" "$env:PACKAGE_PATH" --clobber
