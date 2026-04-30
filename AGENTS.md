@@ -25,7 +25,8 @@ execution history.
 - `PomodoroTimer.iOS/AppDelegate.cs`: iOS head entry point
 - `PomodoroTimer/ViewModels/MainWindowViewModel.cs`: commands, derived UI state,
   and localization bindings
-- `PomodoroTimer/Models/PomodoroTimerState.cs`: timer state machine and phase
+- `PomodoroTimer/Models/PomodoroTimerState.cs`: bindable timer state snapshot
+- `PomodoroTimer/Services/TimerService.cs`: timer state machine and phase
   transitions
 - `PomodoroTimer/Localization/`: language options, localized strings, and
   preference persistence

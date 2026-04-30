@@ -1,8 +1,8 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using PomodoroTimer.Localization;
-using PomodoroTimer.Models;
+using PomodoroTimer.Services;
 using PomodoroTimer.ViewModels;
 using PomodoroTimer.Views;
 
@@ -38,8 +38,13 @@ public partial class App : Application
 
     private static MainWindowViewModel CreateMainWindowViewModel()
     {
-        var localizer = new AppLocalizer(new FileLanguagePreferenceStore());
-        return new MainWindowViewModel(new PomodoroTimerState(), localizer);
+        var pathProvider = new AppDataPathProvider();
+        var settingsStore = new JsonSettingsStore(pathProvider);
+        var sessionStore = new JsonSessionStore(pathProvider);
+        var settings = settingsStore.LoadAsync().GetAwaiter().GetResult();
+        var localizer = new AppLocalizer(settings.LanguageCode);
+
+        return new MainWindowViewModel(settings, settingsStore, sessionStore, localizer);
     }
 
     private static MainView CreateMainView()

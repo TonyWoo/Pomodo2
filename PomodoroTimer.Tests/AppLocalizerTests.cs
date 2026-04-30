@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using PomodoroTimer.Localization;
 using Xunit;
 
@@ -8,7 +8,9 @@ public sealed class AppLocalizerTests
 {
     [Theory]
     [InlineData("zh-CN", AppLanguage.SimplifiedChinese)]
+    [InlineData("zh-Hans", AppLanguage.SimplifiedChinese)]
     [InlineData("zh-TW", AppLanguage.TraditionalChinese)]
+    [InlineData("zh-Hant", AppLanguage.TraditionalChinese)]
     [InlineData("zh-HK", AppLanguage.TraditionalChinese)]
     [InlineData("en-US", AppLanguage.English)]
     [InlineData("fr-FR", AppLanguage.English)]
@@ -22,11 +24,11 @@ public sealed class AppLocalizerTests
     [Fact]
     public void UsesPersistedLanguagePreferenceWhenAvailable()
     {
-        var store = new InMemoryLanguagePreferenceStore("zh-TW");
+        var store = new InMemoryLanguagePreferenceStore("zh-Hant");
         var localizer = new AppLocalizer(store, new CultureInfo("en-US"));
 
         Assert.Equal(AppLanguage.TraditionalChinese, localizer.CurrentLanguage);
-        Assert.Equal("番茄鐘", localizer.GetText(LocalizedText.AppTitle));
+        Assert.Equal("計時", localizer.GetText(LocalizedText.NavTimer));
     }
 
     [Fact]
@@ -37,7 +39,17 @@ public sealed class AppLocalizerTests
 
         localizer.SetLanguage(AppLanguage.SimplifiedChinese);
 
-        Assert.Equal("zh-CN", store.LoadLanguageCode());
-        Assert.Equal("番茄钟", localizer.GetText(LocalizedText.AppTitle));
+        Assert.Equal("zh-Hans", store.LoadLanguageCode());
+        Assert.Equal("计时", localizer.GetText(LocalizedText.NavTimer));
+    }
+
+    [Fact]
+    public void EnglishCatalogContainsRequiredTimerCopy()
+    {
+        var localizer = new AppLocalizer("en");
+
+        Assert.Equal("Timer", localizer.GetText(LocalizedText.NavTimer));
+        Assert.Equal("Untitled Task", localizer.GetText(LocalizedText.TaskUntitled));
+        Assert.Equal("Start", localizer.GetText(LocalizedText.TimerStart));
     }
 }

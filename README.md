@@ -1,16 +1,20 @@
-﻿# PomodoroTimer
+# Pomodo Timer
 
 [中文说明 / Chinese documentation](README.zh-CN.md)
 
-PomodoroTimer is a Pomodoro timer built with Avalonia. The repository now shares one app layer across Windows and macOS desktop, plus dedicated iOS and Android heads that host the same timer UI, localization, and state logic.
+Pomodo Timer is a Pomodoro timer built with Avalonia. The repository shares one app layer across Windows and macOS desktop, plus dedicated iOS and Android heads that host the same timer UI, localization, settings, session history, and state logic.
 
 ## Overview
 
-- Focus session: 25 minutes
-- Short break: 5 minutes
-- Controls for start/pause, reset, and skipping to the next phase
-- Progress tracking for the active phase and completed focus sessions
-- One shared Avalonia view-model/model/localization stack across desktop and mobile heads
+- Default focus session: 25 minutes
+- Default short break: 5 minutes
+- Presets for 25 / 5 and 50 / 5, plus custom work and break durations
+- Topic entry before a focus session starts
+- Start, pause, resume, and reset controls
+- Drift-resistant timer calculations based on target end time
+- Daily completed pomodoro count and focus-session records persisted to local JSON
+- Simplified Chinese, Traditional Chinese, and English UI text
+- One shared Avalonia view-model/model/service/localization stack across desktop and mobile heads
 
 ## Tech Stack
 
@@ -28,7 +32,12 @@ PomodoroTimer is a Pomodoro timer built with Avalonia. The repository now shares
 |-- PomodoroTimer.CrossPlatform.slnx
 |-- PomodoroTimer/
 |   |-- App.axaml
+|   |-- Services/
+|   |-- Styles/
 |   |-- Views/MainView.axaml
+|   |-- Views/TimerView.axaml
+|   |-- Views/StatsView.axaml
+|   |-- Views/SettingsView.axaml
 |   |-- Views/MainWindow.axaml
 |   |-- ViewModels/MainWindowViewModel.cs
 |   `-- Models/PomodoroTimerState.cs
@@ -45,7 +54,12 @@ PomodoroTimer is a Pomodoro timer built with Avalonia. The repository now shares
 Key files:
 
 - `PomodoroTimer/App.axaml.cs`: shared Avalonia startup that routes desktop and mobile lifetimes into the same timer experience
-- `PomodoroTimer/Views/MainView.axaml`: shared timer shell used by desktop and mobile heads
+- `PomodoroTimer/Views/MainView.axaml`: shared responsive shell and navigation used by desktop and mobile heads
+- `PomodoroTimer/Views/TimerView.axaml`: timer page with circular progress, topic entry, controls, today count, and records
+- `PomodoroTimer/Views/StatsView.axaml`: daily focus statistics and session records
+- `PomodoroTimer/Views/SettingsView.axaml`: duration presets, custom durations, and language selection
+- `PomodoroTimer/Services/`: timer, settings, session, and app-data service abstractions
+- `PomodoroTimer/Styles/`: Kingston red, black, and white design tokens and shared control styling
 - `PomodoroTimer.Desktop/Program.cs`: Windows/macOS desktop bootstrap
 - `PomodoroTimer.Android/MainActivity.cs`: Android entry point
 - `PomodoroTimer.iOS/AppDelegate.cs`: iOS entry point
@@ -88,11 +102,13 @@ dotnet test PomodoroTimer.Tests/PomodoroTimer.Tests.csproj --no-build
 
 ## Current App Behavior
 
-- The app starts in a 25-minute focus session
-- Completing a focus session switches to a 5-minute short break
-- Completing a break switches back to focus mode
-- Manually skipping a phase does not increment the completed-focus counter
-- The current UI copy is written in Chinese by default, with additional language options available in-app
+- The app starts on the timer page with a 25-minute work duration and 5-minute break duration
+- Users can enter a focus topic before starting work
+- Completing a full work session stores a completed focus session and increments today's pomodoro count
+- Completing a break does not increment today's pomodoro count
+- Resetting an incomplete work session does not create a completed session
+- Settings and focus sessions persist under the local app-data directory as JSON
+- The default language is Simplified Chinese, with Traditional Chinese and English available in-app
 
 ## Chinese Version
 

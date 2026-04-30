@@ -27,7 +27,8 @@ public sealed class FileLanguagePreferenceStore : ILanguagePreferenceStore
             }
 
             var json = File.ReadAllText(_settingsFilePath);
-            return JsonSerializer.Deserialize<LanguageSettingsDocument>(json)?.Language;
+            var document = JsonSerializer.Deserialize<LanguageSettingsDocument>(json);
+            return document?.LanguageCode ?? document?.Language;
         }
         catch
         {
@@ -46,7 +47,7 @@ public sealed class FileLanguagePreferenceStore : ILanguagePreferenceStore
             }
 
             var json = JsonSerializer.Serialize(
-                new LanguageSettingsDocument { Language = languageCode },
+                new LanguageSettingsDocument { LanguageCode = languageCode },
                 new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(_settingsFilePath, json);
@@ -58,6 +59,8 @@ public sealed class FileLanguagePreferenceStore : ILanguagePreferenceStore
 
     private sealed class LanguageSettingsDocument
     {
+        public string? LanguageCode { get; set; }
+
         public string? Language { get; set; }
     }
 }

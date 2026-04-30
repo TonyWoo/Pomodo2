@@ -1,0 +1,30 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <Color x:Key="Color.Brand.Red">#C8102E</Color>
+        <Color x:Key="Color.Brand.Black">#000000</Color>
+        <Color x:Key="Color.Brand.White">#FFFFFF</Color>
+        <Color x:Key="Color.Text.Primary">#000000</Color>
+        <Color x:Key="Color.Text.Secondary">#99000000</Color>
+        <Color x:Key="Color.Text.Tertiary">#66000000</Color>
+        <Color x:Key="Color.Border.Subtle">#1A000000</Color>
+        <Color x:Key="Color.Surface.Primary">#FFFFFF</Color>
+        <Color x:Key="Color.Surface.Secondary">#FAFAFA</Color>
+        <Color x:Key="Color.Brand.Red.Subtle">#14C8102E</Color>
+        <Color x:Key="Color.Brand.Red.Soft">#20C8102E</Color>
+        <Color x:Key="Color.Focus.Outline">#40C8102E</Color>
+
+        <SolidColorBrush x:Key="Brush.Brand.Red" Color="{StaticResource Color.Brand.Red}" />
+        <SolidColorBrush x:Key="Brush.Brand.Black" Color="{StaticResource Color.Brand.Black}" />
+        <SolidColorBrush x:Key="Brush.Brand.White" Color="{StaticResource Color.Brand.White}" />
+        <SolidColorBrush x:Key="Brush.Text.Primary" Color="{StaticResource Color.Text.Primary}" />
+        <SolidColorBrush x:Key="Brush.Text.Secondary" Color="{StaticResource Color.Text.Secondary}" />
+        <SolidColorBrush x:Key="Brush.Text.Tertiary" Color="{StaticResource Color.Text.Tertiary}" />
+        <SolidColorBrush x:Key="Brush.Border.Subtle" Color="{StaticResource Color.Border.Subtle}" />
+        <SolidColorBrush x:Key="Brush.Surface.Primary" Color="{StaticResource Color.Surface.Primary}" />
+        <SolidColorBrush x:Key="Brush.Surface.Secondary" Color="{StaticResource Color.Surface.Secondary}" />
+        <SolidColorBrush x:Key="Brush.Brand.Red.Subtle" Color="{StaticResource Color.Brand.Red.Subtle}" />
+        <SolidColorBrush x:Key="Brush.Brand.Red.Soft" Color="{StaticResource Color.Brand.Red.Soft}" />
+        <SolidColorBrush x:Key="Brush.Focus.Outline" Color="{StaticResource Color.Focus.Outline}" />
+    </Styles.Resources>
+</Styles>

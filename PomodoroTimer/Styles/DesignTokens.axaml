@@ -1,0 +1,16 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StyleInclude Source="avares://PomodoroTimer/Styles/Colors.axaml" />
+    <StyleInclude Source="avares://PomodoroTimer/Styles/Typography.axaml" />
+
+    <Styles.Resources>
+        <Thickness x:Key="Space.Page">24</Thickness>
+        <Thickness x:Key="Space.Panel">20</Thickness>
+        <Thickness x:Key="Space.Control">14,10</Thickness>
+        <CornerRadius x:Key="Radius.Card">8</CornerRadius>
+        <CornerRadius x:Key="Radius.Control">8</CornerRadius>
+        <x:Double x:Key="Size.Control.MinHeight">44</x:Double>
+        <x:Double x:Key="Size.SideNav.Width">176</x:Double>
+        <x:Double x:Key="Size.TimerRing">320</x:Double>
+    </Styles.Resources>
+</Styles>

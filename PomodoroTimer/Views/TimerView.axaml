@@ -1,0 +1,159 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PomodoroTimer.ViewModels"
+             xmlns:controls="using:PomodoroTimer.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="980"
+             d:DesignHeight="720"
+             x:Class="PomodoroTimer.Views.TimerView"
+             x:DataType="vm:TimerViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Padding="{StaticResource Space.Page}">
+            <WrapPanel Orientation="Horizontal">
+                <Border Classes="card"
+                        MinWidth="320"
+                        MaxWidth="620"
+                        Margin="0,0,20,20">
+                    <StackPanel Spacing="20">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{Binding PageTitle}"
+                                       Classes="sectionTitle" />
+                            <TextBlock Text="{Binding BreakHintText}"
+                                       Classes="caption" />
+                        </StackPanel>
+
+                        <Grid Width="{StaticResource Size.TimerRing}"
+                              Height="{StaticResource Size.TimerRing}"
+                              HorizontalAlignment="Center">
+                            <controls:CircularTimerProgress Progress="{Binding Progress}"
+                                                            TrackBrush="{StaticResource Brush.Brand.Red.Subtle}"
+                                                            IndicatorBrush="{StaticResource Brush.Brand.Red}"
+                                                            StrokeThickness="18" />
+                            <StackPanel HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="8">
+                                <Border Background="{StaticResource Brush.Brand.Red.Subtle}"
+                                        CornerRadius="999"
+                                        Padding="12,5"
+                                        HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding StatusText}"
+                                               Foreground="{StaticResource Brush.Brand.Red}"
+                                               FontWeight="SemiBold" />
+                                </Border>
+                                <TextBlock Text="{Binding RemainingTimeText}"
+                                           FontSize="{StaticResource FontSize.Display}"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding ModeText}"
+                                           Classes="caption"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="{Binding ProgressText}"
+                                   Classes="caption"
+                                   HorizontalAlignment="Center" />
+
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding TopicLabel}"
+                                       FontWeight="SemiBold" />
+                            <TextBox Text="{Binding CurrentTopic}"
+                                     PlaceholderText="{Binding TopicPlaceholder}"
+                                     IsEnabled="{Binding CanEditTopic}" />
+                        </StackPanel>
+
+                        <WrapPanel Orientation="Horizontal">
+                            <Button Classes="primary"
+                                    Content="{Binding StartButtonText}"
+                                    Command="{Binding StartCommand}"
+                                    IsVisible="{Binding ShowStartButton}"
+                                    MinWidth="150"
+                                    Margin="0,0,12,12" />
+                            <Button Classes="primary"
+                                    Content="{Binding PauseButtonText}"
+                                    Command="{Binding PauseCommand}"
+                                    IsVisible="{Binding ShowPauseButton}"
+                                    MinWidth="150"
+                                    Margin="0,0,12,12" />
+                            <Button Classes="primary"
+                                    Content="{Binding ResumeButtonText}"
+                                    Command="{Binding ResumeCommand}"
+                                    IsVisible="{Binding ShowResumeButton}"
+                                    MinWidth="150"
+                                    Margin="0,0,12,12" />
+                            <Button Classes="secondary"
+                                    Content="{Binding ResetButtonText}"
+                                    Command="{Binding ResetCommand}"
+                                    MinWidth="120"
+                                    Margin="0,0,12,12" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Width="340"
+                            Spacing="20"
+                            Margin="0,0,0,20">
+                    <Border Classes="subtleCard">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding TodayPomodorosLabel}"
+                                       Classes="caption" />
+                            <TextBlock Text="{Binding TodayPomodoros}"
+                                       Classes="metricValue" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="subtleCard">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding FocusMinutesLabel}"
+                                       Classes="caption" />
+                            <TextBlock Text="{Binding TodayFocusMinutes}"
+                                       Classes="metricValue" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="{Binding TodayTasksLabel}"
+                                       Classes="sectionTitle" />
+                            <TextBlock Text="{Binding NoSessionsText}"
+                                       Classes="caption"
+                                       IsVisible="{Binding ShowEmptyState}" />
+                            <ItemsControl ItemsSource="{Binding Sessions}"
+                                          IsVisible="{Binding HasSessions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:SessionRowViewModel">
+                                        <Border BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                                BorderThickness="0,0,0,1"
+                                                Padding="0,10">
+                                            <Grid ColumnDefinitions="*,Auto"
+                                                  RowDefinitions="Auto,Auto">
+                                                <TextBlock Text="{Binding Topic}"
+                                                           FontWeight="SemiBold" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding StatusText}"
+                                                           Classes="caption" />
+                                                <StackPanel Grid.Row="1"
+                                                            Grid.ColumnSpan="2"
+                                                            Orientation="Horizontal"
+                                                            Spacing="12"
+                                                            Margin="0,6,0,0">
+                                                    <TextBlock Text="{Binding CompletedTime}"
+                                                               Classes="caption" />
+                                                    <TextBlock Text="{Binding WorkDuration}"
+                                                               Classes="caption" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </WrapPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

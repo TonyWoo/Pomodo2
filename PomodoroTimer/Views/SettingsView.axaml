@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PomodoroTimer.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="980"
+             d:DesignHeight="720"
+             x:Class="PomodoroTimer.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Padding="{StaticResource Space.Page}">
+            <StackPanel Spacing="20" MaxWidth="720">
+                <TextBlock Text="{Binding PageTitle}"
+                           Classes="sectionTitle" />
+
+                <Border Classes="card">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="{Binding PresetsLabel}"
+                                   Classes="caption" />
+                        <WrapPanel Orientation="Horizontal">
+                            <Button Classes="secondary"
+                                    Content="{Binding Preset255Label}"
+                                    Command="{Binding ApplyPresetCommand}"
+                                    CommandParameter="25/5"
+                                    Margin="0,0,10,10" />
+                            <Button Classes="secondary"
+                                    Content="{Binding Preset505Label}"
+                                    Command="{Binding ApplyPresetCommand}"
+                                    CommandParameter="50/5"
+                                    Margin="0,0,10,10" />
+                            <Button Classes="secondary"
+                                    Content="{Binding CustomLabel}"
+                                    Command="{Binding ApplyPresetCommand}"
+                                    CommandParameter="custom"
+                                    Margin="0,0,10,10" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="card">
+                    <StackPanel Spacing="18">
+                        <Grid ColumnDefinitions="*,140"
+                              RowDefinitions="Auto,Auto">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{Binding WorkDurationLabel}"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding MinutesSuffix}"
+                                           Classes="caption" />
+                            </StackPanel>
+                            <NumericUpDown Grid.Column="1"
+                                           Minimum="1"
+                                           Maximum="180"
+                                           Increment="1"
+                                           Value="{Binding WorkDurationMinutes}" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,140"
+                              RowDefinitions="Auto,Auto">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{Binding BreakDurationLabel}"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding MinutesSuffix}"
+                                           Classes="caption" />
+                            </StackPanel>
+                            <NumericUpDown Grid.Column="1"
+                                           Minimum="1"
+                                           Maximum="60"
+                                           Increment="1"
+                                           Value="{Binding BreakDurationMinutes}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="card">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="{Binding LanguageLabel}"
+                                   FontWeight="SemiBold" />
+                        <ComboBox ItemsSource="{Binding LanguageOptions}"
+                                  SelectedItem="{Binding SelectedLanguage}"
+                                  MinHeight="{StaticResource Size.Control.MinHeight}"
+                                  MaxWidth="260" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>
