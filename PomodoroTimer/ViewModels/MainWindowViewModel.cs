@@ -1,228 +1,123 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using PomodoroTimer.Localization;
 using PomodoroTimer.Models;
+using PomodoroTimer.Services;
 
 namespace PomodoroTimer.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public sealed class MainWindowViewModel : ViewModelBase
 {
-    private static readonly TimeSpan UiTickInterval = TimeSpan.FromSeconds(1);
     private readonly AppLocalizer _localizer;
-    private readonly DispatcherTimer _timer;
-    private readonly PomodoroTimerState _timerState;
-    private LanguageOption _selectedLanguage;
+    private AppPage _currentPage = AppPage.Timer;
+    private bool _isCompactLayout;
 
     public MainWindowViewModel()
-        : this(new PomodoroTimerState(), new AppLocalizer(new InMemoryLanguagePreferenceStore()))
+        : this(
+            new AppSettings(),
+            new AppLocalizer("zh-Hans"),
+            new JsonSettingsStore(new AppDataPathProvider()),
+            new JsonSessionStore(new AppDataPathProvider()),
+            [])
     {
     }
 
-    public MainWindowViewModel(PomodoroTimerState timerState, AppLocalizer localizer)
+    public MainWindowViewModel(
+        AppSettings settings,
+        AppLocalizer localizer,
+        ISettingsStore settingsStore,
+        ISessionStore sessionStore,
+        IEnumerable<FocusSession> sessions)
     {
-        _timerState = timerState;
         _localizer = localizer;
-        _localizer.LanguageChanged += OnLanguageChanged;
-        LanguageOptions = _localizer.LanguageOptions;
-        _selectedLanguage = GetLanguageOption(_localizer.CurrentLanguage);
-        _timer = new DispatcherTimer { Interval = UiTickInterval };
-        _timer.Tick += OnTimerTick;
+        var timerService = new TimerService(settings);
+        Timer = new TimerViewModel(timerService, localizer, sessionStore, sessions);
+        Stats = new StatsViewModel(localizer, Timer.AllSessions);
+        Settings = new SettingsViewModel(settings, localizer, settingsStore);
+        CurrentPageViewModel = Timer;
 
-        StartPauseCommand = new RelayCommand(ToggleTimer);
-        ResetCommand = new RelayCommand(ResetTimer);
-        SkipPhaseCommand = new RelayCommand(SkipPhase);
+        NavigateCommand = new RelayCommand<string>(Navigate);
+
+        Timer.SessionsChanged += (_, updatedSessions) => Stats.RefreshSessions(updatedSessions);
+        Settings.SettingsChanged += (_, _) => Timer.ApplySettings();
+        _localizer.LanguageChanged += (_, _) => RefreshLocalization();
     }
 
-    public IRelayCommand StartPauseCommand { get; }
+    public IRelayCommand<string> NavigateCommand { get; }
 
-    public IRelayCommand ResetCommand { get; }
+    public TimerViewModel Timer { get; }
 
-    public IRelayCommand SkipPhaseCommand { get; }
+    public StatsViewModel Stats { get; }
 
-    public IReadOnlyList<LanguageOption> LanguageOptions { get; }
+    public SettingsViewModel Settings { get; }
 
-    public LanguageOption SelectedLanguage
-    {
-        get => _selectedLanguage;
-        set
-        {
-            if (value is null || value == _selectedLanguage)
-            {
-                return;
-            }
-
-            if (SetProperty(ref _selectedLanguage, value))
-            {
-                _localizer.SetLanguage(value.Language);
-            }
-        }
-    }
+    public ViewModelBase CurrentPageViewModel { get; private set; }
 
     public string WindowTitle => _localizer.GetText(LocalizedText.AppTitle);
 
-    public string HeroTitle => _localizer.GetText(LocalizedText.HeroTitle);
+    public string NavTimerText => _localizer.GetText(LocalizedText.NavTimer);
 
-    public string LanguageSelectionLabel => _localizer.GetText(LocalizedText.LanguageSelectionLabel);
+    public string NavStatsText => _localizer.GetText(LocalizedText.NavStats);
 
-    public string PhaseLabel => _timerState.IsFocusSession
-        ? _localizer.GetText(LocalizedText.PhaseFocusLabel)
-        : _localizer.GetText(LocalizedText.PhaseBreakLabel);
+    public string NavSettingsText => _localizer.GetText(LocalizedText.NavSettings);
 
-    public string PhaseDescription => _timerState.IsFocusSession
-        ? _localizer.GetText(LocalizedText.PhaseFocusDescription)
-        : _localizer.GetText(LocalizedText.PhaseBreakDescription);
+    public bool IsTimerPage => _currentPage == AppPage.Timer;
 
-    public string TimerDisplay => _timerState.TimeRemaining.ToString(@"mm\:ss");
+    public bool IsStatsPage => _currentPage == AppPage.Stats;
 
-    public string PrimaryActionLabel => _timerState.IsRunning
-        ? _localizer.GetText(LocalizedText.PrimaryActionPause)
-        : _localizer.GetText(LocalizedText.PrimaryActionStart);
+    public bool IsSettingsPage => _currentPage == AppPage.Settings;
 
-    public string NextPhaseLabel => _timerState.IsFocusSession
-        ? _localizer.GetText(LocalizedText.NextPhaseToBreak)
-        : _localizer.GetText(LocalizedText.NextPhaseToFocus);
-
-    public string ProgressLabel => _localizer.Format(LocalizedText.ProgressLabelFormat, ProgressPercent);
-
-    public double ProgressPercent
+    public bool IsCompactLayout
     {
-        get
+        get => _isCompactLayout;
+        set
         {
-            var totalSeconds = _timerState.CurrentDuration.TotalSeconds;
-            if (totalSeconds <= 0)
+            if (SetProperty(ref _isCompactLayout, value))
             {
-                return 0;
+                Timer.IsCompactLayout = value;
+                OnPropertyChanged(nameof(IsWideLayout));
             }
-
-            var elapsed = _timerState.CurrentDuration - _timerState.TimeRemaining;
-            return Math.Clamp(elapsed.TotalSeconds / totalSeconds * 100, 0, 100);
         }
     }
 
-    public string CompletedFocusSessions => _timerState.CompletedFocusSessions.ToString("D2");
+    public bool IsWideLayout => !IsCompactLayout;
 
-    public string SessionLengthLabel => _timerState.IsFocusSession
-        ? _localizer.GetText(LocalizedText.SessionLengthFocus)
-        : _localizer.GetText(LocalizedText.SessionLengthBreak);
-
-    public string CycleOutline => _localizer.GetText(LocalizedText.CycleOutline);
-
-    public string FocusHint => _timerState.IsFocusSession
-        ? _localizer.GetText(LocalizedText.FocusHintFocus)
-        : _localizer.GetText(LocalizedText.FocusHintBreak);
-
-    public string ResetActionLabel => _localizer.GetText(LocalizedText.ResetActionLabel);
-
-    public string SkipPhaseActionLabel => _localizer.GetText(LocalizedText.SkipPhaseActionLabel);
-
-    public string CompletedRoundsLabel => _localizer.GetText(LocalizedText.CompletedRoundsLabel);
-
-    public string CurrentPaceLabel => _localizer.GetText(LocalizedText.CurrentPaceLabel);
-
-    public string CycleStructureLabel => _localizer.GetText(LocalizedText.CycleStructureLabel);
-
-    public string HowToUseLabel => _localizer.GetText(LocalizedText.HowToUseLabel);
-
-    public string HowToUseSteps => _localizer.GetText(LocalizedText.HowToUseSteps);
-
-    public string StatusMessage => _timerState.Status switch
+    private void Navigate(string? pageName)
     {
-        PomodoroTimerStatus.ReadyToStart => _localizer.GetText(LocalizedText.StatusReadyToStart),
-        PomodoroTimerStatus.FocusRunning => _localizer.GetText(LocalizedText.StatusFocusRunning),
-        PomodoroTimerStatus.BreakRunning => _localizer.GetText(LocalizedText.StatusBreakRunning),
-        PomodoroTimerStatus.FocusPaused => _localizer.GetText(LocalizedText.StatusFocusPaused),
-        PomodoroTimerStatus.BreakPaused => _localizer.GetText(LocalizedText.StatusBreakPaused),
-        PomodoroTimerStatus.Reset => _localizer.GetText(LocalizedText.StatusReset),
-        PomodoroTimerStatus.SwitchedToBreak => _localizer.GetText(LocalizedText.StatusSwitchedToBreak),
-        PomodoroTimerStatus.FocusCompleted => _localizer.GetText(LocalizedText.StatusFocusCompleted),
-        PomodoroTimerStatus.SwitchedToFocus => _localizer.GetText(LocalizedText.StatusSwitchedToFocus),
-        _ => _localizer.GetText(LocalizedText.StatusBreakCompleted),
-    };
-
-    private void ToggleTimer()
-    {
-        _timerState.ToggleRunning();
-
-        if (_timerState.IsRunning)
+        if (!Enum.TryParse<AppPage>(pageName, ignoreCase: true, out var nextPage))
         {
-            _timer.Start();
+            return;
         }
-        else
+
+        if (_currentPage == nextPage)
         {
-            _timer.Stop();
+            return;
         }
 
-        RaiseUiStateChanged();
-    }
-
-    private void ResetTimer()
-    {
-        _timer.Stop();
-        _timerState.Reset();
-        RaiseUiStateChanged();
-    }
-
-    private void SkipPhase()
-    {
-        _timer.Stop();
-        _timerState.SkipPhase();
-        RaiseUiStateChanged();
-    }
-
-    private void OnTimerTick(object? sender, EventArgs e)
-    {
-        _timerState.Advance(UiTickInterval);
-        if (!_timerState.IsRunning)
+        _currentPage = nextPage;
+        CurrentPageViewModel = nextPage switch
         {
-            _timer.Stop();
-        }
+            AppPage.Stats => Stats,
+            AppPage.Settings => Settings,
+            _ => Timer,
+        };
 
-        RaiseUiStateChanged();
+        OnPropertyChanged(nameof(CurrentPageViewModel));
+        OnPropertyChanged(nameof(IsTimerPage));
+        OnPropertyChanged(nameof(IsStatsPage));
+        OnPropertyChanged(nameof(IsSettingsPage));
     }
 
-    private void OnLanguageChanged(object? sender, EventArgs e)
+    private void RefreshLocalization()
     {
-        var nextLanguage = GetLanguageOption(_localizer.CurrentLanguage);
-        if (_selectedLanguage != nextLanguage)
-        {
-            _selectedLanguage = nextLanguage;
-            OnPropertyChanged(nameof(SelectedLanguage));
-        }
+        Timer.RefreshLocalization();
+        Stats.RefreshLocalization();
+        Settings.RefreshLocalization();
 
-        RaiseUiStateChanged();
-    }
-
-    private LanguageOption GetLanguageOption(AppLanguage language)
-    {
-        return LanguageOptions.First(option => option.Language == language);
-    }
-
-    private void RaiseUiStateChanged()
-    {
         OnPropertyChanged(nameof(WindowTitle));
-        OnPropertyChanged(nameof(HeroTitle));
-        OnPropertyChanged(nameof(LanguageSelectionLabel));
-        OnPropertyChanged(nameof(PhaseLabel));
-        OnPropertyChanged(nameof(PhaseDescription));
-        OnPropertyChanged(nameof(TimerDisplay));
-        OnPropertyChanged(nameof(PrimaryActionLabel));
-        OnPropertyChanged(nameof(NextPhaseLabel));
-        OnPropertyChanged(nameof(ProgressLabel));
-        OnPropertyChanged(nameof(ProgressPercent));
-        OnPropertyChanged(nameof(CompletedFocusSessions));
-        OnPropertyChanged(nameof(SessionLengthLabel));
-        OnPropertyChanged(nameof(CycleOutline));
-        OnPropertyChanged(nameof(FocusHint));
-        OnPropertyChanged(nameof(StatusMessage));
-        OnPropertyChanged(nameof(ResetActionLabel));
-        OnPropertyChanged(nameof(SkipPhaseActionLabel));
-        OnPropertyChanged(nameof(CompletedRoundsLabel));
-        OnPropertyChanged(nameof(CurrentPaceLabel));
-        OnPropertyChanged(nameof(CycleStructureLabel));
-        OnPropertyChanged(nameof(HowToUseLabel));
-        OnPropertyChanged(nameof(HowToUseSteps));
+        OnPropertyChanged(nameof(NavTimerText));
+        OnPropertyChanged(nameof(NavStatsText));
+        OnPropertyChanged(nameof(NavSettingsText));
     }
 }

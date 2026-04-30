@@ -5,17 +5,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="1120"
-        d:DesignHeight="820"
+        d:DesignWidth="900"
+        d:DesignHeight="560"
         x:Class="PomodoroTimer.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="{Binding WindowTitle}"
-        Width="1120"
-        Height="820"
-        MinWidth="360"
-        MinHeight="640"
-        Background="#F4EEE4">
+        Width="900"
+        Height="560"
+        MinWidth="390"
+        MinHeight="520"
+        Background="{DynamicResource Brush.Surface.Secondary}">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>

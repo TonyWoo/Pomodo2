@@ -1,0 +1,93 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PomodoroTimer.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="980"
+             d:DesignHeight="680"
+             x:Class="PomodoroTimer.Views.StatsView"
+             x:DataType="vm:StatsViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource Thickness.Page}"
+                    Spacing="18">
+            <TextBlock Text="{Binding Title}"
+                       Classes="pageTitle" />
+
+            <Grid ColumnDefinitions="*,*">
+                <Border Classes="card"
+                        Margin="0,0,10,0">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="{Binding PomodorosLabel}"
+                                   Classes="caption" />
+                        <TextBlock Text="{Binding CompletedValue}"
+                                   Classes="metricValue" />
+                        <TextBlock Text="{Binding CompletedSummary}"
+                                   Classes="caption" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1"
+                        Classes="card"
+                        Margin="10,0,0,0">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="{Binding FocusMinutesLabel}"
+                                   Classes="caption" />
+                        <TextBlock Text="{Binding FocusMinutesValue}"
+                                   Classes="metricValue" />
+                        <TextBlock Text="{Binding FocusMinutesSummary}"
+                                   Classes="caption" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Classes="card">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,90,100,92"
+                          IsVisible="{Binding HasTodaySessions}">
+                        <TextBlock Text="{Binding SessionTopicHeader}"
+                                   Classes="caption" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding SessionCompletedAtHeader}"
+                                   Classes="caption" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding SessionDurationHeader}"
+                                   Classes="caption" />
+                        <TextBlock Grid.Column="3"
+                                   Text="{Binding SessionStatusHeader}"
+                                   Classes="caption" />
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding TodaySessions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SessionListItemViewModel">
+                                <Border BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="0,10">
+                                    <Grid ColumnDefinitions="*,90,100,92">
+                                        <TextBlock Text="{Binding Topic}"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding CompletedAtText}"
+                                                   Classes="caption" />
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding DurationText}"
+                                                   Classes="caption" />
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding StatusText}"
+                                                   Classes="caption" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="{Binding EmptySessionsText}"
+                               Classes="caption"
+                               IsVisible="{Binding HasNoTodaySessions}" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -26,7 +26,7 @@ public sealed class AppLocalizerTests
         var localizer = new AppLocalizer(store, new CultureInfo("en-US"));
 
         Assert.Equal(AppLanguage.TraditionalChinese, localizer.CurrentLanguage);
-        Assert.Equal("番茄鐘", localizer.GetText(LocalizedText.AppTitle));
+        Assert.Equal("Pomodo Timer", localizer.GetText(LocalizedText.AppTitle));
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public sealed class AppLocalizerTests
 
         localizer.SetLanguage(AppLanguage.SimplifiedChinese);
 
-        Assert.Equal("zh-CN", store.LoadLanguageCode());
-        Assert.Equal("番茄钟", localizer.GetText(LocalizedText.AppTitle));
+        Assert.Equal("zh-Hans", store.LoadLanguageCode());
+        Assert.Equal("计时", localizer.GetText(LocalizedText.NavTimer));
     }
 }
