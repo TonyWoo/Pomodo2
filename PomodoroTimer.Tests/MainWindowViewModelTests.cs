@@ -1,8 +1,11 @@
-﻿using System;
-using System.Globalization;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PomodoroTimer.Localization;
 using PomodoroTimer.Models;
+using PomodoroTimer.Services;
 using PomodoroTimer.ViewModels;
 using Xunit;
 
@@ -13,18 +16,86 @@ public sealed class MainWindowViewModelTests
     [Fact]
     public void SwitchingLanguageUpdatesVisibleCopy()
     {
-        var timerState = new PomodoroTimerState(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(4));
-        var localizer = new AppLocalizer(new InMemoryLanguagePreferenceStore(), new CultureInfo("en-US"));
-        var viewModel = new MainWindowViewModel(timerState, localizer);
+        var settings = new AppSettings { LanguageCode = "en" };
+        var localizer = new AppLocalizer(settings.LanguageCode);
+        var viewModel = new MainWindowViewModel(
+            settings,
+            localizer,
+            new InMemorySettingsStore(settings),
+            new InMemorySessionStore(),
+            []);
 
-        Assert.Equal("Pomodoro Timer", viewModel.WindowTitle);
-        Assert.Equal("Start", viewModel.PrimaryActionLabel);
+        Assert.Equal("Pomodo Timer", viewModel.WindowTitle);
+        Assert.Equal("Timer", viewModel.NavTimerText);
+        Assert.Equal("Start", viewModel.Timer.PrimaryActionText);
 
-        viewModel.SelectedLanguage = viewModel.LanguageOptions.Single(option => option.Language == AppLanguage.TraditionalChinese);
+        viewModel.Settings.SelectedLanguage = viewModel.Settings.LanguageOptions
+            .Single(option => option.Language == AppLanguage.TraditionalChinese);
 
-        Assert.Equal("番茄鐘", viewModel.WindowTitle);
-        Assert.Equal("開始", viewModel.PrimaryActionLabel);
-        Assert.Equal("專注階段", viewModel.PhaseLabel);
-        Assert.Equal("準備開始第一輪專注。", viewModel.StatusMessage);
+        Assert.Equal("計時", viewModel.NavTimerText);
+        Assert.Equal("開始", viewModel.Timer.PrimaryActionText);
+        Assert.Equal("工作", viewModel.Timer.ModeText);
+        Assert.Equal("準備開始", viewModel.Timer.StatusText);
+    }
+
+    [Fact]
+    public void NavigationChangesCurrentPage()
+    {
+        var settings = new AppSettings();
+        var viewModel = new MainWindowViewModel(
+            settings,
+            new AppLocalizer(settings.LanguageCode),
+            new InMemorySettingsStore(settings),
+            new InMemorySessionStore(),
+            []);
+
+        Assert.True(viewModel.IsTimerPage);
+        Assert.Same(viewModel.Timer, viewModel.CurrentPageViewModel);
+
+        viewModel.NavigateCommand.Execute("Stats");
+
+        Assert.True(viewModel.IsStatsPage);
+        Assert.Same(viewModel.Stats, viewModel.CurrentPageViewModel);
+    }
+
+    private sealed class InMemorySettingsStore(AppSettings settings) : ISettingsStore
+    {
+        public AppSettings Settings { get; private set; } = settings;
+
+        public Task<AppSettings> LoadAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Settings);
+        }
+
+        public Task SaveAsync(AppSettings settings, CancellationToken cancellationToken = default)
+        {
+            Settings = settings;
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class InMemorySessionStore : ISessionStore
+    {
+        private readonly List<FocusSession> _sessions = [];
+
+        public Task<IReadOnlyList<FocusSession>> LoadSessionsAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult<IReadOnlyList<FocusSession>>(_sessions);
+        }
+
+        public Task SaveSessionAsync(FocusSession session, CancellationToken cancellationToken = default)
+        {
+            _sessions.Add(session);
+            return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyList<FocusSession>> GetSessionsByDateAsync(DateTime date, CancellationToken cancellationToken = default)
+        {
+            var targetDate = DateOnly.FromDateTime(date);
+            IReadOnlyList<FocusSession> sessions = _sessions
+                .Where(session => DateOnly.FromDateTime(session.EndedAt.LocalDateTime) == targetDate)
+                .ToList();
+            return Task.FromResult(sessions);
+        }
     }
 }

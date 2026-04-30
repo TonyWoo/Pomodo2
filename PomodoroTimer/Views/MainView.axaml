@@ -1,11 +1,11 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PomodoroTimer.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignWidth="420"
-             d:DesignHeight="900"
+             d:DesignWidth="1180"
+             d:DesignHeight="760"
              x:Class="PomodoroTimer.Views.MainView"
              x:DataType="vm:MainWindowViewModel">
 
@@ -13,205 +13,83 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <UserControl.Styles>
-        <Style Selector="Button">
-            <Setter Property="CornerRadius" Value="999" />
-            <Setter Property="Padding" Value="20,14" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#C05A2B" />
-            <Setter Property="Foreground" Value="#FFF9F0" />
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#F7E6D7" />
-            <Setter Property="Foreground" Value="#6E3A1C" />
-        </Style>
-        <Style Selector="Button.ghost">
-            <Setter Property="Background" Value="#FFF9F0" />
-            <Setter Property="BorderBrush" Value="#D9B89D" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Foreground" Value="#8A4A26" />
-        </Style>
-        <Style Selector="Border.metricCard">
-            <Setter Property="Background" Value="#FBF6EF" />
-            <Setter Property="BorderBrush" Value="#E3D6C5" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="22" />
-            <Setter Property="Padding" Value="20" />
-        </Style>
-    </UserControl.Styles>
+    <Grid Background="{DynamicResource Brush.Surface.Secondary}">
+        <Grid IsVisible="{Binding IsWideLayout}"
+              ColumnDefinitions="92,*">
+            <Border Grid.Column="0"
+                    Background="{DynamicResource Brush.Surface.Primary}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                    BorderThickness="0,0,1,0"
+                    Padding="14,22">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <Grid Width="42"
+                          Height="42"
+                          HorizontalAlignment="Center">
+                        <Ellipse Fill="{DynamicResource Brush.Brand.Red}" />
+                        <Path Stroke="{DynamicResource Brush.Brand.White}"
+                              StrokeThickness="2"
+                              StrokeLineCap="Round"
+                              Data="M 21 21 L 28 14 M 21 21 L 14 28" />
+                        <Path Fill="{DynamicResource Brush.Brand.Black}"
+                              Data="M 19 5 L 23 10 L 28 6 L 26 13 L 32 12 L 25 17 L 17 14 Z" />
+                    </Grid>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Border Background="#F4EEE4" Padding="24">
-            <Border Background="#FFF9F0"
-                    BorderBrush="#E3D6C5"
-                    BorderThickness="1"
-                    CornerRadius="30"
-                    Padding="24"
-                    MaxWidth="1120"
-                    HorizontalAlignment="Center">
-                <StackPanel Spacing="18">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="{Binding WindowTitle}"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
-                                   Foreground="#2E4B3C" />
-                        <TextBlock Text="{Binding HeroTitle}"
-                                   FontSize="38"
-                                   FontWeight="Bold"
-                                   FontFamily="Georgia, Cambria, Times New Roman"
-                                   Foreground="#3D2A1E"
-                                   TextWrapping="Wrap" />
+                    <StackPanel Grid.Row="1"
+                                VerticalAlignment="Center"
+                                Spacing="10">
+                        <ToggleButton Classes="navItem"
+                                      Content="{Binding NavTimerText}"
+                                      Command="{Binding NavigateCommand}"
+                                      CommandParameter="Timer"
+                                      IsChecked="{Binding IsTimerPage, Mode=OneWay}" />
+                        <ToggleButton Classes="navItem"
+                                      Content="{Binding NavStatsText}"
+                                      Command="{Binding NavigateCommand}"
+                                      CommandParameter="Stats"
+                                      IsChecked="{Binding IsStatsPage, Mode=OneWay}" />
+                        <ToggleButton Classes="navItem"
+                                      Content="{Binding NavSettingsText}"
+                                      Command="{Binding NavigateCommand}"
+                                      CommandParameter="Settings"
+                                      IsChecked="{Binding IsSettingsPage, Mode=OneWay}" />
                     </StackPanel>
-
-                    <Border Background="#F8F2E8"
-                            CornerRadius="28"
-                            Padding="24">
-                        <StackPanel Spacing="22">
-                            <Border Background="#F7E1D5"
-                                    CornerRadius="999"
-                                    Padding="12,6"
-                                    HorizontalAlignment="Left">
-                                <TextBlock Text="{Binding PhaseLabel}"
-                                           FontSize="14"
-                                           FontWeight="SemiBold"
-                                           Foreground="#A24B24" />
-                            </Border>
-
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="{Binding PhaseDescription}"
-                                           FontSize="18"
-                                           Foreground="#5F4C3F"
-                                           TextWrapping="Wrap" />
-                                <TextBlock Text="{Binding FocusHint}"
-                                           FontSize="14"
-                                           Foreground="#8B7767"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-
-                            <TextBlock Text="{Binding TimerDisplay}"
-                                       FontSize="72"
-                                       FontWeight="Bold"
-                                       FontFamily="Georgia, Cambria, Times New Roman"
-                                       Foreground="#3D2A1E"
-                                       TextWrapping="Wrap" />
-
-                            <ProgressBar Value="{Binding ProgressPercent}"
-                                         Maximum="100"
-                                         Height="12"
-                                         Foreground="#C05A2B"
-                                         Background="#E4D7C8" />
-
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="{Binding ProgressLabel}"
-                                           FontSize="14"
-                                           Foreground="#8B7767" />
-                                <TextBlock Text="{Binding NextPhaseLabel}"
-                                           FontSize="14"
-                                           Foreground="#8B7767"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-
-                            <Border Background="#FFF9F0"
-                                    BorderBrush="#E7D8C7"
-                                    BorderThickness="1"
-                                    CornerRadius="20"
-                                    Padding="18">
-                                <TextBlock Text="{Binding StatusMessage}"
-                                           FontSize="16"
-                                           Foreground="#4E3B30"
-                                           TextWrapping="Wrap" />
-                            </Border>
-
-                            <WrapPanel Orientation="Horizontal">
-                                <Button Classes="primary"
-                                        Command="{Binding StartPauseCommand}"
-                                        Content="{Binding PrimaryActionLabel}"
-                                        MinWidth="148"
-                                        Margin="0,0,12,12" />
-                                <Button Classes="secondary"
-                                        Command="{Binding ResetCommand}"
-                                        Content="{Binding ResetActionLabel}"
-                                        MinWidth="116"
-                                        Margin="0,0,12,12" />
-                                <Button Classes="ghost"
-                                        Command="{Binding SkipPhaseCommand}"
-                                        Content="{Binding SkipPhaseActionLabel}"
-                                        MinWidth="126"
-                                        Margin="0,0,12,12" />
-                            </WrapPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Classes="metricCard">
-                        <StackPanel Spacing="16">
-                            <StackPanel Spacing="10">
-                                <TextBlock Text="{Binding LanguageSelectionLabel}"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"
-                                           Foreground="#7A6656" />
-                                <ComboBox ItemsSource="{Binding LanguageOptions}"
-                                          SelectedItem="{Binding SelectedLanguage}"
-                                          MinWidth="156"
-                                          HorizontalAlignment="Left" />
-                            </StackPanel>
-                            <StackPanel Spacing="10">
-                                <TextBlock Text="{Binding CompletedRoundsLabel}"
-                                           FontSize="15"
-                                           Foreground="#7A6656" />
-                                <TextBlock Text="{Binding CompletedFocusSessions}"
-                                           FontSize="44"
-                                           FontWeight="Bold"
-                                           FontFamily="Georgia, Cambria, Times New Roman"
-                                           Foreground="#2E4B3C" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Classes="metricCard">
-                        <StackPanel Spacing="10">
-                            <TextBlock Text="{Binding CurrentPaceLabel}"
-                                       FontSize="15"
-                                       Foreground="#7A6656" />
-                            <TextBlock Text="{Binding SessionLengthLabel}"
-                                       FontSize="26"
-                                       FontWeight="SemiBold"
-                                       Foreground="#3D2A1E"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
-
-                    <Border Classes="metricCard">
-                        <StackPanel Spacing="10">
-                            <TextBlock Text="{Binding CycleStructureLabel}"
-                                       FontSize="15"
-                                       Foreground="#7A6656" />
-                            <TextBlock Text="{Binding CycleOutline}"
-                                       FontSize="22"
-                                       FontWeight="SemiBold"
-                                       Foreground="#3D2A1E"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
-
-                    <Border Background="#2E4B3C"
-                            CornerRadius="24"
-                            Padding="22">
-                        <StackPanel Spacing="10">
-                            <TextBlock Text="{Binding HowToUseLabel}"
-                                       FontSize="18"
-                                       FontWeight="SemiBold"
-                                       Foreground="#FFF7EE" />
-                            <TextBlock Text="{Binding HowToUseSteps}"
-                                       FontSize="15"
-                                       Foreground="#F5E8D7"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
+                </Grid>
             </Border>
-        </Border>
-    </ScrollViewer>
+
+            <ContentControl Grid.Column="1"
+                            Content="{Binding CurrentPageViewModel}" />
+        </Grid>
+
+        <Grid IsVisible="{Binding IsCompactLayout}"
+              RowDefinitions="*,Auto">
+            <ContentControl Content="{Binding CurrentPageViewModel}" />
+
+            <Border Grid.Row="1"
+                    Background="{DynamicResource Brush.Surface.Primary}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                    BorderThickness="1,1,1,0"
+                    Padding="14,10">
+                <Grid ColumnDefinitions="*,*,*">
+                    <ToggleButton Grid.Column="0"
+                                  Classes="navItem"
+                                  Content="{Binding NavTimerText}"
+                                  Command="{Binding NavigateCommand}"
+                                  CommandParameter="Timer"
+                                  IsChecked="{Binding IsTimerPage, Mode=OneWay}" />
+                    <ToggleButton Grid.Column="1"
+                                  Classes="navItem"
+                                  Content="{Binding NavStatsText}"
+                                  Command="{Binding NavigateCommand}"
+                                  CommandParameter="Stats"
+                                  IsChecked="{Binding IsStatsPage, Mode=OneWay}" />
+                    <ToggleButton Grid.Column="2"
+                                  Classes="navItem"
+                                  Content="{Binding NavSettingsText}"
+                                  Command="{Binding NavigateCommand}"
+                                  CommandParameter="Settings"
+                                  IsChecked="{Binding IsSettingsPage, Mode=OneWay}" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
 </UserControl>

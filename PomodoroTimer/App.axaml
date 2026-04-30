@@ -8,7 +8,18 @@
         <local:ViewLocator/>
     </Application.DataTemplates>
 
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://PomodoroTimer/Styles/Colors.axaml" />
+                <ResourceInclude Source="avares://PomodoroTimer/Styles/DesignTokens.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://PomodoroTimer/Styles/Typography.axaml" />
+        <StyleInclude Source="avares://PomodoroTimer/Styles/Controls.axaml" />
     </Application.Styles>
 </Application>

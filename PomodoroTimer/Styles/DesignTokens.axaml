@@ -1,0 +1,15 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:Double x:Key="Size.TouchTarget">44</sys:Double>
+    <sys:Double x:Key="Size.NavRailWidth">92</sys:Double>
+    <sys:Double x:Key="Size.SidePanelWidth">320</sys:Double>
+    <sys:Double x:Key="Size.TimerDialDesktop">360</sys:Double>
+    <sys:Double x:Key="Size.TimerDialMobile">280</sys:Double>
+    <CornerRadius x:Key="Radius.Small">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Medium">12</CornerRadius>
+    <CornerRadius x:Key="Radius.Large">18</CornerRadius>
+    <CornerRadius x:Key="Radius.Pill">999</CornerRadius>
+    <Thickness x:Key="Thickness.Card">20</Thickness>
+    <Thickness x:Key="Thickness.Page">24</Thickness>
+</ResourceDictionary>

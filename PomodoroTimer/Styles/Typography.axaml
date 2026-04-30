@@ -1,0 +1,28 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="TextBlock">
+        <Setter Property="FontFamily" Value="Inter, Segoe UI, Microsoft YaHei UI, PingFang SC, sans-serif" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.pageTitle">
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.sectionTitle">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.caption">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.metricValue">
+        <Setter Property="FontSize" Value="36" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.Red}" />
+    </Style>
+</Styles>

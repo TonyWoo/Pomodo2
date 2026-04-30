@@ -1,0 +1,64 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="Button">
+        <Setter Property="MinHeight" Value="{DynamicResource Size.TouchTarget}" />
+        <Setter Property="Padding" Value="18,10" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource Brush.Brand.Red}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.White}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.Red}" />
+    </Style>
+
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+    </Style>
+
+    <Style Selector="ToggleButton.navItem">
+        <Setter Property="MinHeight" Value="{DynamicResource Size.TouchTarget}" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Medium}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
+    <Style Selector="ToggleButton.navItem:checked">
+        <Setter Property="Background" Value="{DynamicResource Brush.Brand.Red.Subtle}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.Red}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.Red.Subtle}" />
+    </Style>
+
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Raised}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Large}" />
+        <Setter Property="Padding" Value="{DynamicResource Thickness.Card}" />
+        <Setter Property="BoxShadow" Value="0 10 24 0 #0A000000" />
+    </Style>
+
+    <Style Selector="TextBox">
+        <Setter Property="MinHeight" Value="{DynamicResource Size.TouchTarget}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Medium}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="Padding" Value="14,10" />
+    </Style>
+
+    <Style Selector="ComboBox">
+        <Setter Property="MinHeight" Value="{DynamicResource Size.TouchTarget}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Medium}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Primary}" />
+        <Setter Property="Padding" Value="12,8" />
+    </Style>
+</Styles>

@@ -15,7 +15,7 @@
         Height="820"
         MinWidth="360"
         MinHeight="640"
-        Background="#F4EEE4">
+        Background="{DynamicResource Brush.Surface.Secondary}">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
