@@ -83,6 +83,39 @@ public sealed class JsonStoreTests : IDisposable
         Assert.Equal("Today", todaySessions.Single().Topic);
     }
 
+    [Fact]
+    public async Task TaskStorePersistsUpdatesAndFiltersByLocalDate()
+    {
+        var store = new JsonTaskStore(_pathProvider);
+        var today = DateTimeOffset.Now;
+        var yesterday = today.AddDays(-1);
+        var task = new TodayTask
+        {
+            Title = "Ship timer polish",
+            CreatedAt = today,
+        };
+
+        await store.SaveTaskAsync(task);
+        await store.SaveTaskAsync(new TodayTask
+        {
+            Title = "Older task",
+            CreatedAt = yesterday,
+        });
+
+        task.Completed = true;
+        task.CompletedPomodoros = 2;
+        await store.SaveTaskAsync(task);
+
+        var allTasks = await store.LoadTasksAsync();
+        var todayTasks = await store.GetTasksByDateAsync(today.DateTime);
+
+        Assert.Equal(2, allTasks.Count);
+        Assert.Single(todayTasks);
+        Assert.Equal("Ship timer polish", todayTasks.Single().Title);
+        Assert.True(todayTasks.Single().Completed);
+        Assert.Equal(2, todayTasks.Single().CompletedPomodoros);
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_directory))

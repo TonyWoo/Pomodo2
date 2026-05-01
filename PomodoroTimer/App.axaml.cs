@@ -41,11 +41,13 @@ public partial class App : Application
         var pathProvider = new AppDataPathProvider();
         var settingsStore = new JsonSettingsStore(pathProvider);
         var sessionStore = new JsonSessionStore(pathProvider);
+        var taskStore = new JsonTaskStore(pathProvider);
         var settings = settingsStore.LoadAsync().GetAwaiter().GetResult();
         var sessions = sessionStore.LoadSessionsAsync().GetAwaiter().GetResult();
+        var tasks = taskStore.LoadTasksAsync().GetAwaiter().GetResult();
         var localizer = new AppLocalizer(settings.LanguageCode);
 
-        return new MainWindowViewModel(settings, localizer, settingsStore, sessionStore, sessions);
+        return new MainWindowViewModel(settings, localizer, settingsStore, sessionStore, taskStore, sessions, tasks);
     }
 
     private static MainView CreateMainView()

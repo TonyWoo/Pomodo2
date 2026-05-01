@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using PomodoroTimer.Localization;
@@ -16,23 +17,31 @@ public sealed class TimerViewModel : ViewModelBase
     private static readonly TimeSpan UiTickInterval = TimeSpan.FromMilliseconds(250);
     private readonly AppLocalizer _localizer;
     private readonly ISessionStore _sessionStore;
+    private readonly ITaskStore _taskStore;
     private readonly TimerService _timerService;
     private readonly List<FocusSession> _sessions;
+    private readonly List<TodayTask> _tasks;
     private readonly DispatcherTimer _uiTimer;
     private string _topic = string.Empty;
     private bool _isCompactLayout;
+    private Guid? _activeTaskId;
 
     public TimerViewModel(
         TimerService timerService,
         AppLocalizer localizer,
         ISessionStore sessionStore,
-        IEnumerable<FocusSession> sessions)
+        ITaskStore taskStore,
+        IEnumerable<FocusSession> sessions,
+        IEnumerable<TodayTask> tasks)
     {
         _timerService = timerService;
         _localizer = localizer;
         _sessionStore = sessionStore;
+        _taskStore = taskStore;
         _sessions = sessions.OrderBy(session => session.StartedAt).ToList();
+        _tasks = tasks.OrderBy(task => task.CreatedAt).ToList();
         TodaySessions = [];
+        TodayTasks = [];
 
         _timerService.WorkSessionCompleted += OnWorkSessionCompleted;
 
@@ -53,8 +62,10 @@ public sealed class TimerViewModel : ViewModelBase
         ResumeCommand = new RelayCommand(Start, () => _timerService.Status == TimerStatus.Paused);
         ResetCommand = new RelayCommand(Reset);
         PrimaryCommand = new RelayCommand(RunPrimaryAction);
+        AddTaskCommand = new RelayCommand(AddTask, CanAddTask);
 
         RefreshTodaySessions();
+        RefreshTodayTasks();
     }
 
     public event EventHandler<IReadOnlyList<FocusSession>>? SessionsChanged;
@@ -69,14 +80,24 @@ public sealed class TimerViewModel : ViewModelBase
 
     public IRelayCommand PrimaryCommand { get; }
 
+    public IRelayCommand AddTaskCommand { get; }
+
     public ObservableCollection<SessionListItemViewModel> TodaySessions { get; }
+
+    public ObservableCollection<TaskListItemViewModel> TodayTasks { get; }
 
     public IReadOnlyList<FocusSession> AllSessions => _sessions;
 
     public string Topic
     {
         get => _topic;
-        set => SetProperty(ref _topic, value);
+        set
+        {
+            if (SetProperty(ref _topic, value))
+            {
+                AddTaskCommand.NotifyCanExecuteChanged();
+            }
+        }
     }
 
     public bool IsCompactLayout
@@ -171,6 +192,10 @@ public sealed class TimerViewModel : ViewModelBase
 
     public string EmptySessionsText => _localizer.GetText(LocalizedText.TimerNoSessions);
 
+    public string EmptyTasksText => _localizer.GetText(LocalizedText.TaskNoItems);
+
+    public string AddTaskText => _localizer.GetText(LocalizedText.TaskAdd);
+
     public string SessionTopicHeader => _localizer.GetText(LocalizedText.SessionTopic);
 
     public string SessionCompletedAtHeader => _localizer.GetText(LocalizedText.SessionCompletedAt);
@@ -186,6 +211,10 @@ public sealed class TimerViewModel : ViewModelBase
     public bool HasTodaySessions => TodaySessions.Count > 0;
 
     public bool HasNoTodaySessions => !HasTodaySessions;
+
+    public bool HasTodayTasks => TodayTasks.Count > 0;
+
+    public bool HasNoTodayTasks => !HasTodayTasks;
 
     private IReadOnlyList<FocusSession> TodayCompletedSessions
     {
@@ -218,10 +247,16 @@ public sealed class TimerViewModel : ViewModelBase
         OnPropertyChanged(nameof(TodayTasksLabel));
         OnPropertyChanged(nameof(ViewAllText));
         OnPropertyChanged(nameof(EmptySessionsText));
+        OnPropertyChanged(nameof(EmptyTasksText));
+        OnPropertyChanged(nameof(AddTaskText));
         OnPropertyChanged(nameof(SessionTopicHeader));
         OnPropertyChanged(nameof(SessionCompletedAtHeader));
         OnPropertyChanged(nameof(SessionDurationHeader));
         OnPropertyChanged(nameof(SessionStatusHeader));
+        foreach (var task in TodayTasks)
+        {
+            task.Refresh();
+        }
     }
 
     private bool CanStart()
@@ -229,8 +264,24 @@ public sealed class TimerViewModel : ViewModelBase
         return _timerService.Status != TimerStatus.Running;
     }
 
+    private bool CanAddTask()
+    {
+        return !string.IsNullOrWhiteSpace(Topic);
+    }
+
     private void Start()
     {
+        if (_timerService.Mode == TimerMode.Work
+            && _timerService.Status is TimerStatus.Idle or TimerStatus.Completed)
+        {
+            var task = EnsureTaskForStart();
+            if (task is not null)
+            {
+                _activeTaskId = task.Id;
+                Topic = task.Title;
+            }
+        }
+
         _timerService.Start(Topic, _localizer.GetText(LocalizedText.TaskUntitled));
         _uiTimer.Start();
         RaiseTimerPropertiesChanged();
@@ -265,13 +316,87 @@ public sealed class TimerViewModel : ViewModelBase
     {
         _sessions.Add(session);
         await _sessionStore.SaveSessionAsync(session).ConfigureAwait(false);
+        await IncrementTaskPomodoroAsync(session).ConfigureAwait(false);
 
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             RefreshTodaySessions();
+            RefreshTodayTasks();
             RaiseTimerPropertiesChanged();
             SessionsChanged?.Invoke(this, AllSessions);
         });
+    }
+
+    private void AddTask()
+    {
+        var task = EnsureTaskForStart(forceCreate: true);
+        if (task is null)
+        {
+            return;
+        }
+
+        _activeTaskId = task.Id;
+        Topic = task.Title;
+        RefreshTodayTasks();
+    }
+
+    private TodayTask? EnsureTaskForStart(bool forceCreate = false)
+    {
+        var normalizedTopic = Topic.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedTopic))
+        {
+            return _activeTaskId is null ? null : TodayActiveTasks.SingleOrDefault(task => task.Id == _activeTaskId.Value);
+        }
+
+        var existingTask = TodayActiveTasks
+            .FirstOrDefault(task => string.Equals(task.Title, normalizedTopic, StringComparison.OrdinalIgnoreCase));
+        if (existingTask is not null)
+        {
+            return existingTask;
+        }
+
+        if (!forceCreate && _timerService.Mode != TimerMode.Work)
+        {
+            return null;
+        }
+
+        var task = new TodayTask
+        {
+            Title = normalizedTopic,
+            CreatedAt = DateTimeOffset.Now,
+        };
+
+        _tasks.Add(task);
+        _ = _taskStore.SaveTaskAsync(task);
+        RefreshTodayTasks();
+        return task;
+    }
+
+    private async Task IncrementTaskPomodoroAsync(FocusSession session)
+    {
+        var task = ResolveTaskForCompletedSession(session);
+        if (task is null)
+        {
+            return;
+        }
+
+        task.CompletedPomodoros += 1;
+        await _taskStore.SaveTaskAsync(task).ConfigureAwait(false);
+    }
+
+    private TodayTask? ResolveTaskForCompletedSession(FocusSession session)
+    {
+        if (_activeTaskId is not null)
+        {
+            var activeTask = TodayActiveTasks.SingleOrDefault(task => task.Id == _activeTaskId.Value);
+            if (activeTask is not null)
+            {
+                return activeTask;
+            }
+        }
+
+        return TodayActiveTasks.FirstOrDefault(task =>
+            string.Equals(task.Title, session.Topic, StringComparison.OrdinalIgnoreCase));
     }
 
     private void RefreshTodaySessions()
@@ -286,6 +411,70 @@ public sealed class TimerViewModel : ViewModelBase
         OnPropertyChanged(nameof(TodayPomodorosText));
         OnPropertyChanged(nameof(HasTodaySessions));
         OnPropertyChanged(nameof(HasNoTodaySessions));
+    }
+
+    private IReadOnlyList<TodayTask> TodayActiveTasks =>
+        _tasks
+            .Where(task => DateOnly.FromDateTime(task.CreatedAt.LocalDateTime) == DateOnly.FromDateTime(DateTime.Now))
+            .OrderBy(task => task.Completed)
+            .ThenByDescending(task => task.CreatedAt)
+            .ToList();
+
+    private void RefreshTodayTasks()
+    {
+        TodayTasks.Clear();
+        foreach (var task in TodayActiveTasks)
+        {
+            TodayTasks.Add(new TaskListItemViewModel(
+                task,
+                _localizer,
+                UseTask,
+                ToggleTaskCompleted,
+                DeleteTask));
+        }
+
+        foreach (var taskItem in TodayTasks)
+        {
+            taskItem.IsActive = _activeTaskId == taskItem.Id;
+        }
+
+        OnPropertyChanged(nameof(HasTodayTasks));
+        OnPropertyChanged(nameof(HasNoTodayTasks));
+    }
+
+    private void UseTask(TodayTask task)
+    {
+        _activeTaskId = task.Id;
+        Topic = task.Title;
+        RefreshTodayTasks();
+    }
+
+    private async void ToggleTaskCompleted(TodayTask task)
+    {
+        task.Completed = !task.Completed;
+        task.CompletedAt = task.Completed ? DateTimeOffset.Now : null;
+        await _taskStore.SaveTaskAsync(task).ConfigureAwait(false);
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            RefreshTodayTasks();
+        });
+    }
+
+    private async void DeleteTask(TodayTask task)
+    {
+        _tasks.RemoveAll(existing => existing.Id == task.Id);
+        if (_activeTaskId == task.Id)
+        {
+            _activeTaskId = null;
+        }
+
+        await _taskStore.DeleteTaskAsync(task.Id).ConfigureAwait(false);
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            RefreshTodayTasks();
+        });
     }
 
     private void RaiseTimerPropertiesChanged()
@@ -305,5 +494,6 @@ public sealed class TimerViewModel : ViewModelBase
         PauseCommand.NotifyCanExecuteChanged();
         ResumeCommand.NotifyCanExecuteChanged();
         PrimaryCommand.NotifyCanExecuteChanged();
+        AddTaskCommand.NotifyCanExecuteChanged();
     }
 }
