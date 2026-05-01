@@ -23,6 +23,8 @@ public sealed class MainWindowViewModelTests
             localizer,
             new InMemorySettingsStore(settings),
             new InMemorySessionStore(),
+            new InMemoryTaskStore(),
+            [],
             []);
 
         Assert.Equal("Pomodo Timer", viewModel.WindowTitle);
@@ -47,6 +49,8 @@ public sealed class MainWindowViewModelTests
             new AppLocalizer(settings.LanguageCode),
             new InMemorySettingsStore(settings),
             new InMemorySessionStore(),
+            new InMemoryTaskStore(),
+            [],
             []);
 
         Assert.True(viewModel.IsTimerPage);
@@ -96,6 +100,46 @@ public sealed class MainWindowViewModelTests
                 .Where(session => DateOnly.FromDateTime(session.EndedAt.LocalDateTime) == targetDate)
                 .ToList();
             return Task.FromResult(sessions);
+        }
+    }
+
+    private sealed class InMemoryTaskStore : ITaskStore
+    {
+        private readonly List<TodayTask> _tasks = [];
+
+        public Task<IReadOnlyList<TodayTask>> LoadTasksAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult<IReadOnlyList<TodayTask>>(_tasks);
+        }
+
+        public Task SaveTaskAsync(TodayTask task, CancellationToken cancellationToken = default)
+        {
+            var existingIndex = _tasks.FindIndex(existing => existing.Id == task.Id);
+            if (existingIndex >= 0)
+            {
+                _tasks[existingIndex] = task;
+            }
+            else
+            {
+                _tasks.Add(task);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteTaskAsync(Guid taskId, CancellationToken cancellationToken = default)
+        {
+            _tasks.RemoveAll(task => task.Id == taskId);
+            return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyList<TodayTask>> GetTasksByDateAsync(DateTime date, CancellationToken cancellationToken = default)
+        {
+            var targetDate = DateOnly.FromDateTime(date);
+            IReadOnlyList<TodayTask> tasks = _tasks
+                .Where(task => DateOnly.FromDateTime(task.CreatedAt.LocalDateTime) == targetDate)
+                .ToList();
+            return Task.FromResult(tasks);
         }
     }
 }

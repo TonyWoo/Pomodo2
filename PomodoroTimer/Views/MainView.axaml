@@ -1,7 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PomodoroTimer.ViewModels"
-             xmlns:controls="using:PomodoroTimer.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
@@ -16,19 +15,17 @@
 
     <Grid Background="{DynamicResource Brush.Surface.Primary}">
         <Grid IsVisible="{Binding IsWideLayout}"
-              ColumnDefinitions="76,*">
+              ColumnDefinitions="124,*">
             <Border Grid.Column="0"
                     Background="{DynamicResource Brush.Surface.Primary}"
                     BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="0,0,1,0"
-                    Padding="10,14">
-                <Grid RowDefinitions="Auto,*,Auto">
-                    <controls:TomatoIcon Width="34"
-                                         Height="34"
-                                         HorizontalAlignment="Center"
-                                         TomatoBrush="{DynamicResource Brush.Brand.Red}"
-                                         LeafBrush="{DynamicResource Brush.Brand.Black}"
-                                         HighlightBrush="{DynamicResource Brush.Brand.White}" />
+                    Padding="12,16">
+                <Grid RowDefinitions="Auto,*">
+                    <Image Width="42"
+                           Height="42"
+                           HorizontalAlignment="Center"
+                           Source="/Assets/tomato-app-icon.png" />
 
                     <StackPanel Grid.Row="1"
                                 Margin="0,28,0,0"
@@ -37,16 +34,18 @@
                                       Command="{Binding NavigateCommand}"
                                       CommandParameter="Timer"
                                       IsChecked="{Binding IsTimerPage, Mode=OneWay}">
-                            <StackPanel Spacing="5"
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
                                         HorizontalAlignment="Center">
                                 <Path Width="16"
                                       Height="16"
                                       Stretch="Uniform"
+                                      VerticalAlignment="Center"
                                       Data="M 8 1 C 4.1 1 1 4.1 1 8 C 1 11.9 4.1 15 8 15 C 11.9 15 15 11.9 15 8 C 15 4.1 11.9 1 8 1 Z M 7 4 L 9 4 L 9 8 L 12 10 L 11 11.7 L 7 9 Z" />
                                 <TextBlock Text="{Binding NavTimerText}"
                                            FontSize="12"
                                            FontWeight="SemiBold"
-                                           TextAlignment="Center"
+                                           VerticalAlignment="Center"
                                            TextWrapping="NoWrap" />
                             </StackPanel>
                         </ToggleButton>
@@ -54,16 +53,18 @@
                                       Command="{Binding NavigateCommand}"
                                       CommandParameter="Stats"
                                       IsChecked="{Binding IsStatsPage, Mode=OneWay}">
-                            <StackPanel Spacing="5"
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
                                         HorizontalAlignment="Center">
                                 <Path Width="16"
                                       Height="16"
                                       Stretch="Uniform"
+                                      VerticalAlignment="Center"
                                       Data="M 2 13 L 5 13 L 5 7 L 2 7 Z M 6.5 13 L 9.5 13 L 9.5 3 L 6.5 3 Z M 11 13 L 14 13 L 14 5 L 11 5 Z" />
                                 <TextBlock Text="{Binding NavStatsText}"
                                            FontSize="12"
                                            FontWeight="SemiBold"
-                                           TextAlignment="Center"
+                                           VerticalAlignment="Center"
                                            TextWrapping="NoWrap" />
                             </StackPanel>
                         </ToggleButton>
@@ -71,16 +72,18 @@
                                       Command="{Binding NavigateCommand}"
                                       CommandParameter="Settings"
                                       IsChecked="{Binding IsSettingsPage, Mode=OneWay}">
-                            <StackPanel Spacing="5"
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
                                         HorizontalAlignment="Center">
                                 <Path Width="16"
                                       Height="16"
                                       Stretch="Uniform"
+                                      VerticalAlignment="Center"
                                       Data="M 8 1 L 9.5 3.2 L 12.1 2.9 L 13 5.4 L 15 7 L 13.7 9.3 L 14.1 12 L 11.5 12.8 L 10 15 L 7.5 13.8 L 5 15 L 3.6 12.6 L 1 11.8 L 1.7 9.2 L 1 6.8 L 3.2 5.3 L 4 2.8 L 6.6 3.2 Z M 8 5.5 C 6.6 5.5 5.5 6.6 5.5 8 C 5.5 9.4 6.6 10.5 8 10.5 C 9.4 10.5 10.5 9.4 10.5 8 C 10.5 6.6 9.4 5.5 8 5.5 Z" />
                                 <TextBlock Text="{Binding NavSettingsText}"
                                            FontSize="12"
                                            FontWeight="SemiBold"
-                                           TextAlignment="Center"
+                                           VerticalAlignment="Center"
                                            TextWrapping="NoWrap" />
                             </StackPanel>
                         </ToggleButton>
@@ -97,61 +100,65 @@
             <ContentControl Content="{Binding CurrentPageViewModel}" />
 
             <Border Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    Margin="12,0,12,14"
                     Background="{DynamicResource Brush.Surface.Primary}"
                     BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                    BorderThickness="1,1,1,0"
-                    CornerRadius="12,12,0,0"
-                    Padding="10,8">
-                <Grid ColumnDefinitions="*,*,*">
-                    <ToggleButton Grid.Column="0"
-                                  Classes="bottomNavItem"
+                    BorderThickness="1"
+                    CornerRadius="22"
+                    Padding="8">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="8">
+                    <ToggleButton Classes="bottomNavItem"
                                   Command="{Binding NavigateCommand}"
                                   CommandParameter="Timer"
                                   IsChecked="{Binding IsTimerPage, Mode=OneWay}">
-                        <StackPanel Spacing="3">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="6">
                             <Path Width="16"
                                   Height="16"
                                   Stretch="Uniform"
-                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
                                   Data="M 8 1 C 4.1 1 1 4.1 1 8 C 1 11.9 4.1 15 8 15 C 11.9 15 15 11.9 15 8 C 15 4.1 11.9 1 8 1 Z M 7 4 L 9 4 L 9 8 L 12 10 L 11 11.7 L 7 9 Z" />
                             <TextBlock Text="{Binding NavTimerText}"
-                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
                                        TextWrapping="NoWrap" />
                         </StackPanel>
                     </ToggleButton>
-                    <ToggleButton Grid.Column="1"
-                                  Classes="bottomNavItem"
+                    <ToggleButton Classes="bottomNavItem"
                                   Command="{Binding NavigateCommand}"
                                   CommandParameter="Stats"
                                   IsChecked="{Binding IsStatsPage, Mode=OneWay}">
-                        <StackPanel Spacing="3">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="6">
                             <Path Width="16"
                                   Height="16"
                                   Stretch="Uniform"
-                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
                                   Data="M 2 13 L 5 13 L 5 7 L 2 7 Z M 6.5 13 L 9.5 13 L 9.5 3 L 6.5 3 Z M 11 13 L 14 13 L 14 5 L 11 5 Z" />
                             <TextBlock Text="{Binding NavStatsText}"
-                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
                                        TextWrapping="NoWrap" />
                         </StackPanel>
                     </ToggleButton>
-                    <ToggleButton Grid.Column="2"
-                                  Classes="bottomNavItem"
+                    <ToggleButton Classes="bottomNavItem"
                                   Command="{Binding NavigateCommand}"
                                   CommandParameter="Settings"
                                   IsChecked="{Binding IsSettingsPage, Mode=OneWay}">
-                        <StackPanel Spacing="3">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="6">
                             <Path Width="16"
                                   Height="16"
                                   Stretch="Uniform"
-                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
                                   Data="M 8 1 L 9.5 3.2 L 12.1 2.9 L 13 5.4 L 15 7 L 13.7 9.3 L 14.1 12 L 11.5 12.8 L 10 15 L 7.5 13.8 L 5 15 L 3.6 12.6 L 1 11.8 L 1.7 9.2 L 1 6.8 L 3.2 5.3 L 4 2.8 L 6.6 3.2 Z M 8 5.5 C 6.6 5.5 5.5 6.6 5.5 8 C 5.5 9.4 6.6 10.5 8 10.5 C 9.4 10.5 10.5 9.4 10.5 8 C 10.5 6.6 9.4 5.5 8 5.5 Z" />
                             <TextBlock Text="{Binding NavSettingsText}"
-                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
                                        TextWrapping="NoWrap" />
                         </StackPanel>
                     </ToggleButton>
-                </Grid>
+                </StackPanel>
             </Border>
         </Grid>
     </Grid>

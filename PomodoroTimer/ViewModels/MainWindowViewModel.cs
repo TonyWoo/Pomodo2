@@ -19,6 +19,8 @@ public sealed class MainWindowViewModel : ViewModelBase
             new AppLocalizer("zh-Hans"),
             new JsonSettingsStore(new AppDataPathProvider()),
             new JsonSessionStore(new AppDataPathProvider()),
+            new JsonTaskStore(new AppDataPathProvider()),
+            [],
             [])
     {
     }
@@ -28,11 +30,13 @@ public sealed class MainWindowViewModel : ViewModelBase
         AppLocalizer localizer,
         ISettingsStore settingsStore,
         ISessionStore sessionStore,
-        IEnumerable<FocusSession> sessions)
+        ITaskStore taskStore,
+        IEnumerable<FocusSession> sessions,
+        IEnumerable<TodayTask> tasks)
     {
         _localizer = localizer;
         var timerService = new TimerService(settings);
-        Timer = new TimerViewModel(timerService, localizer, sessionStore, sessions);
+        Timer = new TimerViewModel(timerService, localizer, sessionStore, taskStore, sessions, tasks);
         Stats = new StatsViewModel(localizer, Timer.AllSessions);
         Settings = new SettingsViewModel(settings, localizer, settingsStore);
         CurrentPageViewModel = Timer;

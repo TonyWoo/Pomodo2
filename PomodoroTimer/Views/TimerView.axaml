@@ -13,7 +13,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid Margin="{DynamicResource Thickness.Page}">
             <Grid IsVisible="{Binding IsWideLayout}"
-                  ColumnDefinitions="*,278">
+                  ColumnDefinitions="*,294">
                 <StackPanel Grid.Column="0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Stretch"
@@ -32,12 +32,10 @@
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Spacing="8">
-                            <controls:TomatoIcon Width="42"
-                                                 Height="42"
-                                                 HorizontalAlignment="Center"
-                                                 TomatoBrush="{DynamicResource Brush.Brand.Red}"
-                                                 LeafBrush="{DynamicResource Brush.Brand.Black}"
-                                                 HighlightBrush="{DynamicResource Brush.Brand.White}" />
+                            <Image Width="46"
+                                   Height="46"
+                                   HorizontalAlignment="Center"
+                                   Source="/Assets/tomato-app-icon.png" />
                             <TextBlock Text="{Binding RemainingTimeText}"
                                        FontSize="62"
                                        FontWeight="Bold"
@@ -128,8 +126,18 @@
                         <StackPanel Spacing="8">
                             <TextBlock Text="{Binding TopicLabel}"
                                        FontWeight="SemiBold" />
-                            <TextBox Text="{Binding Topic}"
-                                     PlaceholderText="{Binding TopicPlaceholder}" />
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="10">
+                                <TextBox Text="{Binding Topic}"
+                                         PlaceholderText="{Binding TopicPlaceholder}" />
+                                <Button Grid.Column="1"
+                                        Classes="secondary"
+                                        Command="{Binding AddTaskCommand}">
+                                    <TextBlock Text="{Binding AddTaskText}"
+                                               FontWeight="SemiBold"
+                                               TextWrapping="NoWrap" />
+                                </Button>
+                            </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -140,11 +148,9 @@
                             Spacing="14">
                     <Border Classes="card">
                         <Grid ColumnDefinitions="Auto,*">
-                            <controls:TomatoIcon Width="48"
-                                                 Height="48"
-                                                 TomatoBrush="{DynamicResource Brush.Brand.Red}"
-                                                 LeafBrush="{DynamicResource Brush.Brand.Black}"
-                                                 HighlightBrush="{DynamicResource Brush.Brand.White}" />
+                            <Image Width="52"
+                                   Height="52"
+                                   Source="/Assets/tomato-app-icon.png" />
                             <StackPanel Grid.Column="1"
                                         Margin="12,0,0,0">
                                 <TextBlock Text="{Binding TodayPomodorosLabel}"
@@ -158,68 +164,71 @@
 
                     <Border Classes="card">
                         <StackPanel Spacing="12">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Text="{Binding TodayTasksLabel}"
-                                           Classes="sectionTitle"
-                                           FontSize="15" />
-                                <TextBlock Grid.Column="1"
-                                           Text="+"
-                                           FontSize="18"
-                                           Foreground="{DynamicResource Brush.Text.Primary}"
-                                           VerticalAlignment="Center" />
-                            </Grid>
+                            <TextBlock Text="{Binding TodayTasksLabel}"
+                                       Classes="sectionTitle"
+                                       FontSize="15" />
 
-                            <ItemsControl ItemsSource="{Binding TodaySessions}">
+                            <ItemsControl ItemsSource="{Binding TodayTasks}">
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="vm:SessionListItemViewModel">
-                                        <Grid ColumnDefinitions="14,*,Auto"
-                                              Margin="0,6">
-                                            <Ellipse Width="8"
-                                                     Height="8"
-                                                     Fill="{DynamicResource Brush.Brand.Red}"
-                                                     VerticalAlignment="Top"
-                                                     Margin="0,6,0,0" />
-                                            <StackPanel Grid.Column="1"
-                                                        Margin="8,0,8,0">
-                                                <TextBlock Text="{Binding Topic}"
-                                                           FontWeight="SemiBold"
-                                                           FontSize="13"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           TextWrapping="NoWrap" />
-                                                <TextBlock Text="{Binding CompletedAtText}"
-                                                           Classes="caption"
-                                                           FontSize="11" />
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="2"
-                                                        HorizontalAlignment="Right">
-                                                <TextBlock Text="{Binding DurationText}"
-                                                           Classes="caption"
-                                                           FontSize="11"
-                                                           TextAlignment="Right" />
-                                                <TextBlock Text="{Binding StatusText}"
-                                                           Classes="caption"
-                                                           FontSize="11"
-                                                           TextAlignment="Right" />
-                                            </StackPanel>
-                                        </Grid>
+                                    <DataTemplate x:DataType="vm:TaskListItemViewModel">
+                                        <Border Classes="taskItem"
+                                                Margin="0,6,0,0">
+                                            <Grid ColumnDefinitions="*,Auto"
+                                                  ColumnSpacing="10">
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="{Binding Title}"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="13"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               TextWrapping="NoWrap" />
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Spacing="8">
+                                                        <TextBlock Text="{Binding PomodoroCountText}"
+                                                                   Classes="caption"
+                                                                   FontSize="11" />
+                                                        <TextBlock Text="{Binding CompletionText}"
+                                                                   Classes="caption"
+                                                                   FontSize="11" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1"
+                                                            Orientation="Horizontal"
+                                                            Spacing="6"
+                                                            HorizontalAlignment="Right">
+                                                    <Button Classes="taskActionButton"
+                                                            Command="{Binding UseTaskCommand}">
+                                                        <Path Width="12"
+                                                              Height="12"
+                                                              Stretch="Uniform"
+                                                              Fill="{DynamicResource Brush.Brand.Red}"
+                                                              Data="M 2 1 L 11 6 L 2 11 Z" />
+                                                    </Button>
+                                                    <Button Classes="taskActionButton"
+                                                            Command="{Binding ToggleCompletedCommand}">
+                                                        <Path Width="12"
+                                                              Height="12"
+                                                              Stretch="Uniform"
+                                                              Fill="{DynamicResource Brush.Text.Primary}"
+                                                              Data="M 10.8 2.2 L 5.5 10.8 L 2.2 7.5 L 3.6 6.1 L 5.3 7.8 L 9.1 1.6 Z" />
+                                                    </Button>
+                                                    <Button Classes="taskActionButton"
+                                                            Command="{Binding DeleteTaskCommand}">
+                                                        <Path Width="12"
+                                                              Height="12"
+                                                              Stretch="Uniform"
+                                                              Fill="{DynamicResource Brush.Text.Secondary}"
+                                                              Data="M 4 1 L 4.7 0 L 7.3 0 L 8 1 L 11 1 L 11 2.5 L 1 2.5 L 1 1 Z M 2.2 3.5 L 9.8 3.5 L 9.1 12 L 2.9 12 Z M 4 5 L 5.4 5 L 5.4 10.5 L 4 10.5 Z M 6.6 5 L 8 5 L 8 10.5 L 6.6 10.5 Z" />
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-                            <TextBlock Text="{Binding EmptySessionsText}"
+                            <TextBlock Text="{Binding EmptyTasksText}"
                                        Classes="caption"
-                                       IsVisible="{Binding HasNoTodaySessions}" />
-
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Text="{Binding ViewAllText}"
-                                           Classes="caption" />
-                                <Path Grid.Column="1"
-                                      Width="10"
-                                      Height="10"
-                                      Fill="{DynamicResource Brush.Text.Primary}"
-                                      Stretch="Uniform"
-                                      Data="M 2 0 L 8 5 L 2 10 Z" />
-                            </Grid>
+                                       IsVisible="{Binding HasNoTodayTasks}" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -239,12 +248,10 @@
                             <StackPanel HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         Spacing="8">
-                                <controls:TomatoIcon Width="36"
-                                                     Height="36"
-                                                     HorizontalAlignment="Center"
-                                                     TomatoBrush="{DynamicResource Brush.Brand.Red}"
-                                                     LeafBrush="{DynamicResource Brush.Brand.Black}"
-                                                     HighlightBrush="{DynamicResource Brush.Brand.White}" />
+                                <Image Width="40"
+                                       Height="40"
+                                       HorizontalAlignment="Center"
+                                       Source="/Assets/tomato-app-icon.png" />
                                 <TextBlock Text="{Binding RemainingTimeText}"
                                            FontSize="48"
                                            FontWeight="Bold"
@@ -263,8 +270,18 @@
                         <StackPanel Spacing="8">
                             <TextBlock Text="{Binding TopicLabel}"
                                        FontWeight="SemiBold" />
-                            <TextBox Text="{Binding Topic}"
-                                     PlaceholderText="{Binding TopicPlaceholder}" />
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="10">
+                                <TextBox Text="{Binding Topic}"
+                                         PlaceholderText="{Binding TopicPlaceholder}" />
+                                <Button Grid.Column="1"
+                                        Classes="secondary"
+                                        Command="{Binding AddTaskCommand}">
+                                    <TextBlock Text="{Binding AddTaskText}"
+                                               FontWeight="SemiBold"
+                                               TextWrapping="NoWrap" />
+                                </Button>
+                            </Grid>
                         </StackPanel>
 
                         <Button Classes="primary"
@@ -313,12 +330,10 @@
                 </Border>
 
                 <Border Classes="card">
-                    <Grid ColumnDefinitions="Auto,*,Auto">
-                        <controls:TomatoIcon Width="42"
-                                             Height="42"
-                                             TomatoBrush="{DynamicResource Brush.Brand.Red}"
-                                             LeafBrush="{DynamicResource Brush.Brand.Black}"
-                                             HighlightBrush="{DynamicResource Brush.Brand.White}" />
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Image Width="46"
+                               Height="46"
+                               Source="/Assets/tomato-app-icon.png" />
                         <StackPanel Grid.Column="1"
                                     Margin="12,0,0,0">
                             <TextBlock Text="{Binding TodayPomodorosLabel}"
@@ -333,31 +348,63 @@
                     <StackPanel Spacing="12">
                         <TextBlock Text="{Binding TodayTasksLabel}"
                                    Classes="sectionTitle" />
-                        <ItemsControl ItemsSource="{Binding TodaySessions}">
+                        <ItemsControl ItemsSource="{Binding TodayTasks}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:SessionListItemViewModel">
-                                    <Grid ColumnDefinitions="*,Auto"
-                                          Margin="0,7">
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding Topic}"
-                                                       FontWeight="SemiBold" />
-                                            <TextBlock Text="{Binding DurationText}"
-                                                       Classes="caption" />
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1"
-                                                    HorizontalAlignment="Right">
-                                            <TextBlock Text="{Binding CompletedAtText}"
-                                                       Classes="caption" />
-                                            <TextBlock Text="{Binding StatusText}"
-                                                       Classes="caption" />
-                                        </StackPanel>
-                                    </Grid>
+                                <DataTemplate x:DataType="vm:TaskListItemViewModel">
+                                    <Border Classes="taskItem"
+                                            Margin="0,7,0,0">
+                                        <Grid ColumnDefinitions="*,Auto"
+                                              ColumnSpacing="8">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Title}"
+                                                           FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           TextWrapping="NoWrap" />
+                                                <StackPanel Orientation="Horizontal"
+                                                            Spacing="8">
+                                                    <TextBlock Text="{Binding PomodoroCountText}"
+                                                               Classes="caption" />
+                                                    <TextBlock Text="{Binding CompletionText}"
+                                                               Classes="caption" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1"
+                                                        Orientation="Horizontal"
+                                                        HorizontalAlignment="Right"
+                                                        Spacing="6">
+                                                <Button Classes="taskActionButton"
+                                                        Command="{Binding UseTaskCommand}">
+                                                    <Path Width="12"
+                                                          Height="12"
+                                                          Stretch="Uniform"
+                                                          Fill="{DynamicResource Brush.Brand.Red}"
+                                                          Data="M 2 1 L 11 6 L 2 11 Z" />
+                                                </Button>
+                                                <Button Classes="taskActionButton"
+                                                        Command="{Binding ToggleCompletedCommand}">
+                                                    <Path Width="12"
+                                                          Height="12"
+                                                          Stretch="Uniform"
+                                                          Fill="{DynamicResource Brush.Text.Primary}"
+                                                          Data="M 10.8 2.2 L 5.5 10.8 L 2.2 7.5 L 3.6 6.1 L 5.3 7.8 L 9.1 1.6 Z" />
+                                                </Button>
+                                                <Button Classes="taskActionButton"
+                                                        Command="{Binding DeleteTaskCommand}">
+                                                    <Path Width="12"
+                                                          Height="12"
+                                                          Stretch="Uniform"
+                                                          Fill="{DynamicResource Brush.Text.Secondary}"
+                                                          Data="M 4 1 L 4.7 0 L 7.3 0 L 8 1 L 11 1 L 11 2.5 L 1 2.5 L 1 1 Z M 2.2 3.5 L 9.8 3.5 L 9.1 12 L 2.9 12 Z M 4 5 L 5.4 5 L 5.4 10.5 L 4 10.5 Z M 6.6 5 L 8 5 L 8 10.5 L 6.6 10.5 Z" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Text="{Binding EmptySessionsText}"
+                        <TextBlock Text="{Binding EmptyTasksText}"
                                    Classes="caption"
-                                   IsVisible="{Binding HasNoTodaySessions}" />
+                                   IsVisible="{Binding HasNoTodayTasks}" />
                     </StackPanel>
                 </Border>
             </StackPanel>
