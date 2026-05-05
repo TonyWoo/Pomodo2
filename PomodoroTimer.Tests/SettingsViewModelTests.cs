@@ -12,21 +12,60 @@ namespace PomodoroTimer.Tests;
 public sealed class SettingsViewModelTests
 {
     [Fact]
-    public void PresetsAndDurationCommandsUpdateSettings()
+    public void PresetsApplyExpectedDurationsAndSelectionStates()
     {
         var settings = new AppSettings();
         var viewModel = new SettingsViewModel(settings, new AppLocalizer(settings.LanguageCode), new InMemorySettingsStore(settings));
 
-        viewModel.ApplyPresetCommand.Execute("50/5");
+        viewModel.ApplyPresetCommand.Execute("50/10");
 
         Assert.Equal(50, viewModel.WorkDurationMinutes);
+        Assert.Equal(10, viewModel.BreakDurationMinutes);
+        Assert.False(viewModel.IsPreset25_5Active);
+        Assert.True(viewModel.IsPreset50_10Active);
+        Assert.False(viewModel.IsPresetCustomActive);
+
+        viewModel.ApplyPresetCommand.Execute("25/5");
+
+        Assert.Equal(25, viewModel.WorkDurationMinutes);
         Assert.Equal(5, viewModel.BreakDurationMinutes);
+        Assert.True(viewModel.IsPreset25_5Active);
+        Assert.False(viewModel.IsPreset50_10Active);
+        Assert.False(viewModel.IsPresetCustomActive);
+    }
+
+    [Fact]
+    public void DurationCommandsApplyCustomValuesAndSelectCustomMode()
+    {
+        var settings = new AppSettings();
+        var viewModel = new SettingsViewModel(settings, new AppLocalizer(settings.LanguageCode), new InMemorySettingsStore(settings));
+
+        viewModel.ApplyPresetCommand.Execute("50/10");
 
         viewModel.DecreaseWorkDurationCommand.Execute(null);
         viewModel.IncreaseBreakDurationCommand.Execute(null);
 
         Assert.Equal(49, settings.WorkDurationMinutes);
-        Assert.Equal(6, settings.BreakDurationMinutes);
+        Assert.Equal(11, settings.BreakDurationMinutes);
+        Assert.False(viewModel.IsPreset25_5Active);
+        Assert.False(viewModel.IsPreset50_10Active);
+        Assert.True(viewModel.IsPresetCustomActive);
+    }
+
+    [Fact]
+    public void SelectingCustomModeIsExclusiveEvenWhenDurationsMatchPreset()
+    {
+        var settings = new AppSettings();
+        var viewModel = new SettingsViewModel(settings, new AppLocalizer(settings.LanguageCode), new InMemorySettingsStore(settings));
+
+        viewModel.ApplyPresetCommand.Execute("50/10");
+        viewModel.ApplyPresetCommand.Execute("custom");
+
+        Assert.Equal(50, settings.WorkDurationMinutes);
+        Assert.Equal(10, settings.BreakDurationMinutes);
+        Assert.False(viewModel.IsPreset25_5Active);
+        Assert.False(viewModel.IsPreset50_10Active);
+        Assert.True(viewModel.IsPresetCustomActive);
     }
 
     [Fact]
