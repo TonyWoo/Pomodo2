@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-desktop",
+      "type": "shell",
+      "command": "dotnet build ${workspaceFolder}/PomodoroTimer.Desktop/PomodoroTimer.Desktop.csproj -c Debug",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build-ios",
+      "type": "shell",
+      "command": "dotnet build ${workspaceFolder}/PomodoroTimer.iOS/PomodoroTimer.iOS.csproj -c Debug -f net10.0-ios",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "run-ios",
+      "type": "shell",
+      "command": "dotnet run -f net10.0-ios -r iossimulator-arm64 --no-launch-profile",
+      "group": "build",
+      "isBackground": false,
+      "options": {
+        "cwd": "${workspaceFolder}/PomodoroTimer.iOS"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}

@@ -26,6 +26,12 @@ public sealed class TimerViewModel : ViewModelBase
     private bool _isCompactLayout;
     private Guid? _activeTaskId;
 
+    /// <summary>
+    /// Set by the view to provide a platform confirm dialog.
+    /// Receives (title, message) and returns true if the user confirmed.
+    /// </summary>
+    public Func<string, string, Task<bool>>? ConfirmDeleteTask { get; set; }
+
     public TimerViewModel(
         TimerService timerService,
         AppLocalizer localizer,
@@ -430,7 +436,8 @@ public sealed class TimerViewModel : ViewModelBase
                 _localizer,
                 UseTask,
                 ToggleTaskCompleted,
-                DeleteTask));
+                DeleteTask,
+                ConfirmDeleteTask));
         }
 
         foreach (var taskItem in TodayTasks)

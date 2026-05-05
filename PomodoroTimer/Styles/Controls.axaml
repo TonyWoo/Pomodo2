@@ -26,7 +26,32 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToggleButton.navItem:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.04}" />
+    </Style>
+
+    <Style Selector="ToggleButton.navItem:pressed">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.08}" />
     </Style>
 
     <Style Selector="ToggleButton.navItem TextBlock">
@@ -38,9 +63,11 @@
     </Style>
 
     <Style Selector="ToggleButton.navItem:checked">
-        <Setter Property="Background" Value="{DynamicResource Brush.Brand.Red.Subtle}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.Red}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.Red.Subtle}" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ToggleButton.navItem:checked:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.04}" />
     </Style>
 
     <Style Selector="ToggleButton.navItem:checked TextBlock">
@@ -58,7 +85,32 @@
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToggleButton.bottomNavItem:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.04}" />
+    </Style>
+
+    <Style Selector="ToggleButton.bottomNavItem:pressed">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.08}" />
     </Style>
 
     <Style Selector="ToggleButton.bottomNavItem TextBlock">
@@ -71,8 +123,11 @@
     </Style>
 
     <Style Selector="ToggleButton.bottomNavItem:checked">
-        <Setter Property="Background" Value="{DynamicResource Brush.Brand.Red.Subtle}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.Red.Subtle}" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ToggleButton.bottomNavItem:checked:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.04}" />
     </Style>
 
     <Style Selector="ToggleButton.bottomNavItem:checked TextBlock">
@@ -119,12 +174,68 @@
     </Style>
 
     <Style Selector="Button.taskActionButton">
-        <Setter Property="MinHeight" Value="30" />
-        <Setter Property="MinWidth" Value="30" />
-        <Setter Property="Padding" Value="8" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="MinWidth" Value="24" />
+        <Setter Property="Padding" Value="4" />
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
         <Setter Property="Background" Value="{DynamicResource Brush.Surface.Primary}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <!-- Preset picker buttons in Settings — match primary Button style when selected -->
+    <Style Selector="ToggleButton.presetButton">
+        <Setter Property="MinHeight" Value="{DynamicResource Size.TouchTarget}" />
+        <Setter Property="Padding" Value="18,10" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToggleButton.presetButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.04}" />
+    </Style>
+
+    <Style Selector="ToggleButton.presetButton:pressed">
+        <Setter Property="Background" Value="{DynamicResource Brush.Black.08}" />
+    </Style>
+
+    <Style Selector="ToggleButton.presetButton:checked">
+        <Setter Property="Background" Value="{DynamicResource Brush.Brand.Red}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.White}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.Red}" />
+    </Style>
+
+    <Style Selector="ToggleButton.presetButton:checked:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Brand.Red}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.White}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.Red}" />
+    </Style>
+
+    <Style Selector="ToggleButton.presetButton:checked:pressed">
+        <Setter Property="Background" Value="{DynamicResource Brush.Brand.Red}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.White}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.Red}" />
     </Style>
 </Styles>
