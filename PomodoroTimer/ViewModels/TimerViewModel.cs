@@ -342,7 +342,7 @@ public sealed class TimerViewModel : ViewModelBase
         }
 
         _activeTaskId = task.Id;
-        Topic = task.Title;
+        Topic = string.Empty;
         RefreshTodayTasks();
     }
 
