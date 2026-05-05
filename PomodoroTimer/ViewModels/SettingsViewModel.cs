@@ -65,6 +65,10 @@ public sealed class SettingsViewModel : ViewModelBase
 
     public string PresetFiftyFiveText => _localizer.GetText(LocalizedText.SettingsPresetFiftyFive);
 
+    public bool IsPreset25_5Active => _settings.WorkDurationMinutes == 25 && _settings.BreakDurationMinutes == 5;
+    public bool IsPreset50_5Active => _settings.WorkDurationMinutes == 50 && _settings.BreakDurationMinutes == 5;
+    public bool IsPresetCustomActive => !IsPreset25_5Active && !IsPreset50_5Active;
+
     public int WorkDurationMinutes
     {
         get => _settings.WorkDurationMinutes;
@@ -78,6 +82,9 @@ public sealed class SettingsViewModel : ViewModelBase
 
             _settings.WorkDurationMinutes = next;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsPreset25_5Active));
+            OnPropertyChanged(nameof(IsPreset50_5Active));
+            OnPropertyChanged(nameof(IsPresetCustomActive));
             PersistSettings();
         }
     }
@@ -95,6 +102,9 @@ public sealed class SettingsViewModel : ViewModelBase
 
             _settings.BreakDurationMinutes = next;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsPreset25_5Active));
+            OnPropertyChanged(nameof(IsPreset50_5Active));
+            OnPropertyChanged(nameof(IsPresetCustomActive));
             PersistSettings();
         }
     }
@@ -159,6 +169,9 @@ public sealed class SettingsViewModel : ViewModelBase
 
         OnPropertyChanged(nameof(WorkDurationMinutes));
         OnPropertyChanged(nameof(BreakDurationMinutes));
+        OnPropertyChanged(nameof(IsPreset25_5Active));
+        OnPropertyChanged(nameof(IsPreset50_5Active));
+        OnPropertyChanged(nameof(IsPresetCustomActive));
         PersistSettings();
     }
 

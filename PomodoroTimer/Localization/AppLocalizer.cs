@@ -70,6 +70,10 @@ public sealed class AppLocalizer
                 [LocalizedText.SessionStatus] = "状态",
                 [LocalizedText.SessionCompleted] = "已完成",
                 [LocalizedText.SessionIncomplete] = "未完成",
+                [LocalizedText.TaskDeleteConfirmTitle] = "删除任务",
+                [LocalizedText.TaskDeleteConfirmMessage] = "确认删除此任务？",
+                [LocalizedText.TaskDeleteConfirmYes] = "删除",
+                [LocalizedText.TaskDeleteConfirmNo] = "取消",
             },
             [AppLanguage.TraditionalChinese] = new Dictionary<LocalizedText, string>
             {
@@ -129,6 +133,10 @@ public sealed class AppLocalizer
                 [LocalizedText.SessionStatus] = "狀態",
                 [LocalizedText.SessionCompleted] = "已完成",
                 [LocalizedText.SessionIncomplete] = "未完成",
+                [LocalizedText.TaskDeleteConfirmTitle] = "刪除任務",
+                [LocalizedText.TaskDeleteConfirmMessage] = "確認刪除此任務？",
+                [LocalizedText.TaskDeleteConfirmYes] = "刪除",
+                [LocalizedText.TaskDeleteConfirmNo] = "取消",
             },
             [AppLanguage.English] = new Dictionary<LocalizedText, string>
             {
@@ -188,6 +196,10 @@ public sealed class AppLocalizer
                 [LocalizedText.SessionStatus] = "Status",
                 [LocalizedText.SessionCompleted] = "Completed",
                 [LocalizedText.SessionIncomplete] = "Incomplete",
+                [LocalizedText.TaskDeleteConfirmTitle] = "Delete Task",
+                [LocalizedText.TaskDeleteConfirmMessage] = "Are you sure you want to delete this task?",
+                [LocalizedText.TaskDeleteConfirmYes] = "Delete",
+                [LocalizedText.TaskDeleteConfirmNo] = "Cancel",
             },
         };
 

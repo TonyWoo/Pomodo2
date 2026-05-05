@@ -95,19 +95,22 @@
                     <TextBlock Text="{Binding PresetsLabel}"
                                Classes="sectionTitle" />
                     <Grid ColumnDefinitions="*,*,*">
-                        <Button Grid.Column="0"
-                                Classes="primary"
+                        <ToggleButton Grid.Column="0"
+                                Classes="presetButton"
+                                IsChecked="{Binding IsPreset25_5Active, Mode=OneWay}"
                                 Content="{Binding PresetTwentyFiveFiveText}"
                                 Command="{Binding ApplyPresetCommand}"
                                 CommandParameter="25/5" />
-                        <Button Grid.Column="1"
-                                Classes="secondary"
+                        <ToggleButton Grid.Column="1"
+                                Classes="presetButton"
                                 Margin="10,0"
+                                IsChecked="{Binding IsPreset50_5Active, Mode=OneWay}"
                                 Content="{Binding PresetFiftyFiveText}"
                                 Command="{Binding ApplyPresetCommand}"
                                 CommandParameter="50/5" />
-                        <Button Grid.Column="2"
-                                Classes="secondary"
+                        <ToggleButton Grid.Column="2"
+                                Classes="presetButton"
+                                IsChecked="{Binding IsPresetCustomActive, Mode=OneWay}"
                                 Content="{Binding CustomLabel}"
                                 Command="{Binding ApplyPresetCommand}"
                                 CommandParameter="custom" />

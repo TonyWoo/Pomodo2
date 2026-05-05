@@ -31,4 +31,19 @@
     <SolidColorBrush x:Key="Brush.Black.04" Color="{StaticResource Color.Black.04}" />
     <SolidColorBrush x:Key="Brush.Black.08" Color="{StaticResource Color.Black.08}" />
     <SolidColorBrush x:Key="Brush.Black.12" Color="{StaticResource Color.Black.12}" />
+
+    <!-- Modern gradient background: cool light gray -->
+    <LinearGradientBrush x:Key="Brush.Background.Gradient"
+                         StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#F5F5F7" Offset="0" />
+        <GradientStop Color="#EBEBED" Offset="0.5" />
+        <GradientStop Color="#F0F0F2" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Sidebar gradient: near-white → light gray -->
+    <LinearGradientBrush x:Key="Brush.Sidebar.Gradient"
+                         StartPoint="0%,0%" EndPoint="0%,100%">
+        <GradientStop Color="#FAFAFA" Offset="0" />
+        <GradientStop Color="#F3F3F5" Offset="1" />
+    </LinearGradientBrush>
 </ResourceDictionary>

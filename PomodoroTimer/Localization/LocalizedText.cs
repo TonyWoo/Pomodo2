@@ -58,4 +58,8 @@ public enum LocalizedText
     SessionStatus,
     SessionCompleted,
     SessionIncomplete,
+    TaskDeleteConfirmTitle,
+    TaskDeleteConfirmMessage,
+    TaskDeleteConfirmYes,
+    TaskDeleteConfirmNo,
 }

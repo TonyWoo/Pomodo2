@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run (macOS / Windows Desktop)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-desktop",
+      "program": "${workspaceFolder}/PomodoroTimer.Desktop/bin/Debug/net8.0/PomodoroTimer.Desktop",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Debug (macOS / Windows Desktop)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-desktop",
+      "program": "${workspaceFolder}/PomodoroTimer.Desktop/bin/Debug/net8.0/PomodoroTimer.Desktop",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "console": "internalConsole"
+    },
+    {
+      "name": "Run (iOS Simulator)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "run-ios",
+      "program": "${workspaceFolder}/PomodoroTimer.iOS/bin/Debug/net10.0-ios/iossimulator-arm64/PomodoroTimer.iOS.app/PomodoroTimer.iOS",
+      "args": [],
+      "cwd": "${workspaceFolder}/PomodoroTimer.iOS",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "console": "internalConsole"
+    }
+  ]
+}

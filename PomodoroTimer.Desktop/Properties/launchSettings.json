@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "PomodoroTimer (Windows)": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "nativeDebugging": false
+    },
+    "PomodoroTimer (macOS)": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "nativeDebugging": false
+    }
+  }
+}
