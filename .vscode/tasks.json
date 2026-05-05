@@ -24,10 +24,22 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "clean-ios",
+      "type": "shell",
+      "command": "rm -rf ${workspaceFolder}/PomodoroTimer.iOS/bin ${workspaceFolder}/PomodoroTimer.iOS/obj",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "run-ios",
       "type": "shell",
       "command": "dotnet run -f net10.0-ios -r iossimulator-arm64 --no-launch-profile",
       "group": "build",
+      "dependsOn": ["clean-ios"],
       "isBackground": false,
       "options": {
         "cwd": "${workspaceFolder}/PomodoroTimer.iOS"

@@ -65,19 +65,19 @@
                     <Grid ColumnDefinitions="*,*,*"
                           HorizontalAlignment="Center">
                         <Button Grid.Column="0"
-                                Classes="secondary"
+                                Classes="primary"
                                 Command="{Binding StartCommand}">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8"
                                         HorizontalAlignment="Center">
                                 <Path Width="14"
                                       Height="14"
-                                      Fill="{DynamicResource Brush.Brand.Red}"
+                                      Fill="{DynamicResource Brush.Brand.White}"
                                       Stretch="Uniform"
                                       VerticalAlignment="Center"
                                       Data="M 2 1 L 13 7 L 2 13 Z" />
                                 <TextBlock Text="{Binding StartActionText}"
-                                           Foreground="{DynamicResource Brush.Brand.Red}"
+                                           Foreground="{DynamicResource Brush.Brand.White}"
                                            FontWeight="SemiBold"
                                            TextWrapping="NoWrap" />
                             </StackPanel>
