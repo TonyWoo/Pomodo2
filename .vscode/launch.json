@@ -30,11 +30,16 @@
     },
     {
       "name": "Run (iOS Simulator)",
-      "type": "node",
+      "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "run-ios",
-      "runtimeExecutable": "echo",
-      "runtimeArgs": ["iOS app launched via run-ios task"],
+      "program": "${workspaceFolder}/PomodoroTimer.iOS/bin/Debug/net10.0-ios/iossimulator-arm64/PomodoroTimer.iOS.app/PomodoroTimer.iOS",
+      "args": [],
+      "cwd": "${workspaceFolder}/PomodoroTimer.iOS",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
       "console": "internalConsole"
     }
   ]
