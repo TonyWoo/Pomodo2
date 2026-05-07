@@ -39,7 +39,7 @@ public enum LocalizedText
     SettingsLanguage,
     SettingsMinutes,
     SettingsPresetTwentyFiveFive,
-    SettingsPresetFiftyFive,
+    SettingsPresetFiftyTen,
     AboutTitle,
     AboutVersionLabel,
     AboutAuthorsLabel,

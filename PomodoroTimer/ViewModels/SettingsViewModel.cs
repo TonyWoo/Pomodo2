@@ -10,10 +10,18 @@ namespace PomodoroTimer.ViewModels;
 
 public sealed class SettingsViewModel : ViewModelBase
 {
+    private enum WorkModeSelection
+    {
+        TwentyFiveFive,
+        FiftyTen,
+        Custom,
+    }
+
     private readonly AppLocalizer _localizer;
     private readonly AppSettings _settings;
     private readonly ISettingsStore _settingsStore;
     private LanguageOption _selectedLanguage;
+    private WorkModeSelection _selectedWorkMode;
 
     public SettingsViewModel(AppSettings settings, AppLocalizer localizer, ISettingsStore settingsStore)
     {
@@ -22,6 +30,7 @@ public sealed class SettingsViewModel : ViewModelBase
         _settingsStore = settingsStore;
         LanguageOptions = _localizer.LanguageOptions;
         _selectedLanguage = LanguageOptions.First(option => option.Language == _localizer.CurrentLanguage);
+        _selectedWorkMode = ResolveWorkModeSelection();
 
         IncreaseWorkDurationCommand = new RelayCommand(() => ChangeWorkDuration(1));
         DecreaseWorkDurationCommand = new RelayCommand(() => ChangeWorkDuration(-1));
@@ -63,11 +72,11 @@ public sealed class SettingsViewModel : ViewModelBase
 
     public string PresetTwentyFiveFiveText => _localizer.GetText(LocalizedText.SettingsPresetTwentyFiveFive);
 
-    public string PresetFiftyFiveText => _localizer.GetText(LocalizedText.SettingsPresetFiftyFive);
+    public string PresetFiftyTenText => _localizer.GetText(LocalizedText.SettingsPresetFiftyTen);
 
-    public bool IsPreset25_5Active => _settings.WorkDurationMinutes == 25 && _settings.BreakDurationMinutes == 5;
-    public bool IsPreset50_5Active => _settings.WorkDurationMinutes == 50 && _settings.BreakDurationMinutes == 5;
-    public bool IsPresetCustomActive => !IsPreset25_5Active && !IsPreset50_5Active;
+    public bool IsPreset25_5Active => _selectedWorkMode == WorkModeSelection.TwentyFiveFive;
+    public bool IsPreset50_10Active => _selectedWorkMode == WorkModeSelection.FiftyTen;
+    public bool IsPresetCustomActive => _selectedWorkMode == WorkModeSelection.Custom;
 
     public int WorkDurationMinutes
     {
@@ -81,10 +90,9 @@ public sealed class SettingsViewModel : ViewModelBase
             }
 
             _settings.WorkDurationMinutes = next;
+            _selectedWorkMode = WorkModeSelection.Custom;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(IsPreset25_5Active));
-            OnPropertyChanged(nameof(IsPreset50_5Active));
-            OnPropertyChanged(nameof(IsPresetCustomActive));
+            NotifyWorkModeSelectionChanged();
             PersistSettings();
         }
     }
@@ -101,10 +109,9 @@ public sealed class SettingsViewModel : ViewModelBase
             }
 
             _settings.BreakDurationMinutes = next;
+            _selectedWorkMode = WorkModeSelection.Custom;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(IsPreset25_5Active));
-            OnPropertyChanged(nameof(IsPreset50_5Active));
-            OnPropertyChanged(nameof(IsPresetCustomActive));
+            NotifyWorkModeSelectionChanged();
             PersistSettings();
         }
     }
@@ -138,7 +145,7 @@ public sealed class SettingsViewModel : ViewModelBase
         OnPropertyChanged(nameof(LanguageLabel));
         OnPropertyChanged(nameof(MinutesLabel));
         OnPropertyChanged(nameof(PresetTwentyFiveFiveText));
-        OnPropertyChanged(nameof(PresetFiftyFiveText));
+        OnPropertyChanged(nameof(PresetFiftyTenText));
     }
 
     private void ChangeWorkDuration(int delta)
@@ -158,20 +165,23 @@ public sealed class SettingsViewModel : ViewModelBase
             case "25/5":
                 _settings.WorkDurationMinutes = 25;
                 _settings.BreakDurationMinutes = 5;
+                _selectedWorkMode = WorkModeSelection.TwentyFiveFive;
                 break;
-            case "50/5":
+            case "50/10":
                 _settings.WorkDurationMinutes = 50;
-                _settings.BreakDurationMinutes = 5;
+                _settings.BreakDurationMinutes = 10;
+                _selectedWorkMode = WorkModeSelection.FiftyTen;
+                break;
+            case "custom":
+                _selectedWorkMode = WorkModeSelection.Custom;
                 break;
             default:
-                break;
+                return;
         }
 
         OnPropertyChanged(nameof(WorkDurationMinutes));
         OnPropertyChanged(nameof(BreakDurationMinutes));
-        OnPropertyChanged(nameof(IsPreset25_5Active));
-        OnPropertyChanged(nameof(IsPreset50_5Active));
-        OnPropertyChanged(nameof(IsPresetCustomActive));
+        NotifyWorkModeSelectionChanged();
         PersistSettings();
     }
 
@@ -193,5 +203,27 @@ public sealed class SettingsViewModel : ViewModelBase
         SettingsChanged?.Invoke(this, EventArgs.Empty);
 
         await _settingsStore.SaveAsync(_settings).ConfigureAwait(false);
+    }
+
+    private WorkModeSelection ResolveWorkModeSelection()
+    {
+        if (_settings.WorkDurationMinutes == 25 && _settings.BreakDurationMinutes == 5)
+        {
+            return WorkModeSelection.TwentyFiveFive;
+        }
+
+        if (_settings.WorkDurationMinutes == 50 && _settings.BreakDurationMinutes == 10)
+        {
+            return WorkModeSelection.FiftyTen;
+        }
+
+        return WorkModeSelection.Custom;
+    }
+
+    private void NotifyWorkModeSelectionChanged()
+    {
+        OnPropertyChanged(nameof(IsPreset25_5Active));
+        OnPropertyChanged(nameof(IsPreset50_10Active));
+        OnPropertyChanged(nameof(IsPresetCustomActive));
     }
 }
