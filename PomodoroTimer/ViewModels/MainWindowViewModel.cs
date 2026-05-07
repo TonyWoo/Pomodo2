@@ -39,6 +39,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         Timer = new TimerViewModel(timerService, localizer, sessionStore, taskStore, sessions, tasks);
         Stats = new StatsViewModel(localizer, Timer.AllSessions);
         Settings = new SettingsViewModel(settings, localizer, settingsStore);
+        About = new AboutViewModel(localizer);
         CurrentPageViewModel = Timer;
 
         NavigateCommand = new RelayCommand<string>(Navigate);
@@ -56,6 +57,8 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public SettingsViewModel Settings { get; }
 
+    public AboutViewModel About { get; }
+
     public ViewModelBase CurrentPageViewModel { get; private set; }
 
     public string WindowTitle => _localizer.GetText(LocalizedText.AppTitle);
@@ -66,11 +69,15 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public string NavSettingsText => _localizer.GetText(LocalizedText.NavSettings);
 
+    public string NavAboutText => _localizer.GetText(LocalizedText.NavAbout);
+
     public bool IsTimerPage => _currentPage == AppPage.Timer;
 
     public bool IsStatsPage => _currentPage == AppPage.Stats;
 
     public bool IsSettingsPage => _currentPage == AppPage.Settings;
+
+    public bool IsAboutPage => _currentPage == AppPage.About;
 
     public bool IsCompactLayout
     {
@@ -104,6 +111,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             AppPage.Stats => Stats,
             AppPage.Settings => Settings,
+            AppPage.About => About,
             _ => Timer,
         };
 
@@ -111,6 +119,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsTimerPage));
         OnPropertyChanged(nameof(IsStatsPage));
         OnPropertyChanged(nameof(IsSettingsPage));
+        OnPropertyChanged(nameof(IsAboutPage));
     }
 
     private void RefreshLocalization()
@@ -118,10 +127,12 @@ public sealed class MainWindowViewModel : ViewModelBase
         Timer.RefreshLocalization();
         Stats.RefreshLocalization();
         Settings.RefreshLocalization();
+        About.RefreshLocalization();
 
         OnPropertyChanged(nameof(WindowTitle));
         OnPropertyChanged(nameof(NavTimerText));
         OnPropertyChanged(nameof(NavStatsText));
         OnPropertyChanged(nameof(NavSettingsText));
+        OnPropertyChanged(nameof(NavAboutText));
     }
 }
