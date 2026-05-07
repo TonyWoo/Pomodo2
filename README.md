@@ -6,11 +6,42 @@ PomodoroTimer is a Pomodoro timer built with Avalonia. The repository now shares
 
 ## Overview
 
-- Focus session: 25 minutes
-- Short break: 5 minutes
-- Controls for start/pause, reset, and skipping to the next phase
-- Progress tracking for the active phase and completed focus sessions
-- One shared Avalonia view-model/model/localization stack across desktop and mobile heads
+PomodoroTimer is a full-featured productivity application that combines the Pomodoro Technique with task management and statistics tracking. The app shares one unified codebase across Windows, macOS desktop, iOS, and Android platforms.
+
+## Features
+
+- **Pomodoro Timer**
+  - Customizable work duration (default 25 minutes)
+  - Customizable break duration (default 5 minutes)
+  - Start/pause, reset, and skip controls
+  - Visual progress indicator with circular timer display
+  
+- **Task Management**
+  - Create and manage daily tasks
+  - Track completed pomodoros per task
+  - Mark tasks as complete or delete them
+  - Tasks persist across app sessions
+  
+- **Statistics & History**
+  - View daily statistics and focus time
+  - Browse session history with timestamps
+  - Track productivity trends over time
+  
+- **Multi-Language Support**
+  - Built-in localization system
+  - Switch between languages in-app
+  - Persistent language preference
+  
+- **Multi-Page Navigation**
+  - Timer: Main pomodoro interface with task list
+  - Stats: Daily statistics and session history
+  - Settings: Customize durations and language
+  - About: App version and information
+  
+- **Cross-Platform**
+  - Responsive layout for desktop and mobile
+  - Shared UI and business logic across all platforms
+  - Platform-specific optimizations
 
 ## Tech Stack
 
@@ -28,10 +59,37 @@ PomodoroTimer is a Pomodoro timer built with Avalonia. The repository now shares
 |-- PomodoroTimer.CrossPlatform.slnx
 |-- PomodoroTimer/
 |   |-- App.axaml
-|   |-- Views/MainView.axaml
-|   |-- Views/MainWindow.axaml
-|   |-- ViewModels/MainWindowViewModel.cs
-|   `-- Models/PomodoroTimerState.cs
+|   |-- Views/
+|   |   |-- MainView.axaml
+|   |   |-- MainWindow.axaml
+|   |   |-- TimerView.axaml
+|   |   |-- StatsView.axaml
+|   |   |-- SettingsView.axaml
+|   |   `-- AboutView.axaml
+|   |-- ViewModels/
+|   |   |-- MainWindowViewModel.cs
+|   |   |-- TimerViewModel.cs
+|   |   |-- StatsViewModel.cs
+|   |   |-- SettingsViewModel.cs
+|   |   |-- AboutViewModel.cs
+|   |   |-- TaskListItemViewModel.cs
+|   |   `-- SessionListItemViewModel.cs
+|   |-- Models/
+|   |   |-- PomodoroTimerState.cs
+|   |   |-- TodayTask.cs
+|   |   |-- FocusSession.cs
+|   |   |-- DailyStats.cs
+|   |   `-- AppSettings.cs
+|   |-- Services/
+|   |   |-- TimerService.cs
+|   |   |-- JsonTaskStore.cs
+|   |   |-- JsonSessionStore.cs
+|   |   |-- JsonSettingsStore.cs
+|   |   `-- ITaskStore.cs / ISessionStore.cs / ISettingsStore.cs
+|   `-- Localization/
+|       |-- AppLocalizer.cs
+|       |-- LocalizedText.cs
+|       `-- LanguageOption.cs
 |-- PomodoroTimer.Desktop/
 |   `-- Program.cs
 |-- PomodoroTimer.Android/
@@ -45,7 +103,14 @@ PomodoroTimer is a Pomodoro timer built with Avalonia. The repository now shares
 Key files:
 
 - `PomodoroTimer/App.axaml.cs`: shared Avalonia startup that routes desktop and mobile lifetimes into the same timer experience
-- `PomodoroTimer/Views/MainView.axaml`: shared timer shell used by desktop and mobile heads
+- `PomodoroTimer/Views/MainView.axaml`: shared timer shell with multi-page navigation
+- `PomodoroTimer/ViewModels/TimerViewModel.cs`: timer logic, task coordination, and UI state
+- `PomodoroTimer/ViewModels/StatsViewModel.cs`: statistics calculation and session history
+- `PomodoroTimer/Models/PomodoroTimerState.cs`: timer state machine and phase transitions
+- `PomodoroTimer/Models/TodayTask.cs`: task model with pomodoro counting
+- `PomodoroTimer/Services/TimerService.cs`: core timer service with settings support
+- `PomodoroTimer/Services/JsonTaskStore.cs`: task persistence layer
+- `PomodoroTimer/Localization/AppLocalizer.cs`: multi-language support and string management
 - `PomodoroTimer.Desktop/Program.cs`: Windows/macOS desktop bootstrap
 - `PomodoroTimer.Android/MainActivity.cs`: Android entry point
 - `PomodoroTimer.iOS/AppDelegate.cs`: iOS entry point
@@ -88,11 +153,27 @@ dotnet test PomodoroTimer.Tests/PomodoroTimer.Tests.csproj --no-build
 
 ## Current App Behavior
 
-- The app starts in a 25-minute focus session
-- Completing a focus session switches to a 5-minute short break
+### Timer and Task Management
+
+- The app starts on the Timer page with a 25-minute focus session
+- Users can create daily tasks before or during a pomodoro session
+- Starting a timer without an active task creates an "Untitled" task automatically
+- Completing a focus session:
+  - Increments the pomodoro count for the active task
+  - Saves the session to history
+  - Switches to a 5-minute short break
 - Completing a break switches back to focus mode
 - Manually skipping a phase does not increment the completed-focus counter
-- The current UI copy is written in Chinese by default, with additional language options available in-app
+- Tasks can be marked as complete or deleted
+- All tasks and sessions persist across app restarts
+
+### Navigation and Settings
+
+- Navigate between Timer, Stats, Settings, and About pages using the sidebar (desktop) or bottom navigation (mobile)
+- Stats page shows daily statistics and session history
+- Settings page allows customization of work/break durations and language selection
+- The default UI language is Chinese (Simplified), with additional language options available in-app
+- All settings persist across app sessions
 
 ## Chinese Version
 
