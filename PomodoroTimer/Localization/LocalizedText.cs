@@ -38,7 +38,7 @@ public enum LocalizedText
     SettingsLanguage,
     SettingsMinutes,
     SettingsPresetTwentyFiveFive,
-    SettingsPresetFiftyFive,
+    SettingsPresetFiftyTen,
     LanguageSimplifiedChinese,
     LanguageTraditionalChinese,
     LanguageEnglish,
