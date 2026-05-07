@@ -23,7 +23,40 @@ public sealed class TimerViewModelTests
 
         Assert.Single(viewModel.TodayTasks);
         Assert.Equal("Write release notes", viewModel.TodayTasks[0].Title);
+        Assert.Empty(viewModel.Topic);
         Assert.Single(taskStore.Tasks);
+    }
+
+    [Fact]
+    public void AddTaskCommandDoesNotCreateTaskForWhitespaceTopic()
+    {
+        var viewModel = CreateViewModel(out var taskStore);
+
+        viewModel.Topic = "   ";
+
+        Assert.False(viewModel.AddTaskCommand.CanExecute(null));
+
+        viewModel.AddTaskCommand.Execute(null);
+
+        Assert.Empty(viewModel.TodayTasks);
+        Assert.Empty(taskStore.Tasks);
+    }
+
+    [Fact]
+    public void StartCommandUsesTaskAddedBeforeInputWasCleared()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.Topic = "Review onboarding flow";
+        viewModel.AddTaskCommand.Execute(null);
+
+        Assert.Empty(viewModel.Topic);
+
+        viewModel.StartCommand.Execute(null);
+
+        Assert.True(viewModel.IsRunning);
+        Assert.Equal("Review onboarding flow", viewModel.Topic);
+        Assert.Single(viewModel.TodayTasks);
     }
 
     [Fact]

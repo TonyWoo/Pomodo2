@@ -135,7 +135,12 @@
                             <Grid ColumnDefinitions="*,Auto"
                                   ColumnSpacing="10">
                                 <TextBox Text="{Binding Topic}"
-                                         PlaceholderText="{Binding TopicPlaceholder}" />
+                                         PlaceholderText="{Binding TopicPlaceholder}">
+                                    <TextBox.KeyBindings>
+                                        <KeyBinding Gesture="Enter"
+                                                    Command="{Binding AddTaskCommand}" />
+                                    </TextBox.KeyBindings>
+                                </TextBox>
                                 <Button Grid.Column="1"
                                         Classes="secondary"
                                         Command="{Binding AddTaskCommand}">
@@ -280,7 +285,12 @@
                             <Grid ColumnDefinitions="*,Auto"
                                   ColumnSpacing="10">
                                 <TextBox Text="{Binding Topic}"
-                                         PlaceholderText="{Binding TopicPlaceholder}" />
+                                         PlaceholderText="{Binding TopicPlaceholder}">
+                                    <TextBox.KeyBindings>
+                                        <KeyBinding Gesture="Enter"
+                                                    Command="{Binding AddTaskCommand}" />
+                                    </TextBox.KeyBindings>
+                                </TextBox>
                                 <Button Grid.Column="1"
                                         Classes="secondary"
                                         Command="{Binding AddTaskCommand}">
