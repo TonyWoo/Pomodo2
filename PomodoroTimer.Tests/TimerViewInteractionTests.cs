@@ -37,6 +37,29 @@ public sealed class TimerViewInteractionTests
         }
     }
 
+    [Fact]
+    public void MainViewIncludesAboutNavigationInWideAndCompactLayouts()
+    {
+        XNamespace avalonia = "https://github.com/avaloniaui";
+        var document = XDocument.Load(GetRepoPath("PomodoroTimer", "Views", "MainView.axaml"));
+        var navButtons = document
+            .Descendants(avalonia + "ToggleButton")
+            .Where(element => string.Equals((string?)element.Attribute("Command"), "{Binding NavigateCommand}", StringComparison.Ordinal))
+            .ToList();
+
+        Assert.Equal(
+            ["Timer", "Stats", "Settings", "About", "Timer", "Stats", "Settings", "About"],
+            navButtons.Select(element => (string)element.Attribute("CommandParameter")!).ToArray());
+
+        var aboutButtons = navButtons
+            .Where(element => string.Equals((string?)element.Attribute("CommandParameter"), "About", StringComparison.Ordinal))
+            .ToList();
+
+        Assert.Equal(2, aboutButtons.Count);
+        Assert.All(aboutButtons, button =>
+            Assert.Equal("{Binding IsAboutPage, Mode=OneWay}", (string?)button.Attribute("IsChecked")));
+    }
+
     private static string GetRepoPath(params string[] relativeSegments)
     {
         var segments = new List<string> { RepoRoot };

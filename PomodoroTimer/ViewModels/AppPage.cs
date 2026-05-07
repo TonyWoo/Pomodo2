@@ -5,4 +5,5 @@ public enum AppPage
     Timer,
     Stats,
     Settings,
+    About,
 }

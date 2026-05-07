@@ -29,11 +29,13 @@ public sealed class MainWindowViewModelTests
 
         Assert.Equal("Pomodo Timer", viewModel.WindowTitle);
         Assert.Equal("Timer", viewModel.NavTimerText);
+        Assert.Equal("About", viewModel.NavAboutText);
         Assert.Equal("Start", viewModel.Timer.PrimaryActionText);
 
         viewModel.Settings.SelectedLanguage = viewModel.Settings.LanguageOptions
             .Single(option => option.Language == AppLanguage.TraditionalChinese);
 
+        Assert.Equal("About", viewModel.NavAboutText);
         Assert.Equal("計時", viewModel.NavTimerText);
         Assert.Equal("開始", viewModel.Timer.PrimaryActionText);
         Assert.Equal("工作", viewModel.Timer.ModeText);
@@ -59,7 +61,28 @@ public sealed class MainWindowViewModelTests
         viewModel.NavigateCommand.Execute("Stats");
 
         Assert.True(viewModel.IsStatsPage);
+        Assert.False(viewModel.IsTimerPage);
         Assert.Same(viewModel.Stats, viewModel.CurrentPageViewModel);
+
+        viewModel.NavigateCommand.Execute("Settings");
+
+        Assert.True(viewModel.IsSettingsPage);
+        Assert.False(viewModel.IsStatsPage);
+        Assert.Same(viewModel.Settings, viewModel.CurrentPageViewModel);
+
+        viewModel.NavigateCommand.Execute("About");
+
+        Assert.True(viewModel.IsAboutPage);
+        Assert.False(viewModel.IsSettingsPage);
+        Assert.Same(viewModel.About, viewModel.CurrentPageViewModel);
+        Assert.Equal("Tony Wu, Symphony, Codex", viewModel.About.AuthorsText);
+        Assert.False(string.IsNullOrWhiteSpace(viewModel.About.Version));
+
+        viewModel.NavigateCommand.Execute("Timer");
+
+        Assert.True(viewModel.IsTimerPage);
+        Assert.False(viewModel.IsAboutPage);
+        Assert.Same(viewModel.Timer, viewModel.CurrentPageViewModel);
     }
 
     private sealed class InMemorySettingsStore(AppSettings settings) : ISettingsStore
